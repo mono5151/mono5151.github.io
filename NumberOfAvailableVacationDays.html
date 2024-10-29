@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	width: 100%;
+	font-size: 12pt;
+}
+div, table{
+	margin: 16px;
+	width: calc(100% - 32px);
+}
+div{
+	font-size: 16pt;
+	text-align: center;
+}
+table{
+	white-space: nowrap;
+	border-collapse: collapse;
+	table-layout: fixed;
+}
+th, td{
+	border: 1px black solid;
+	text-align: center;
+	padding: 8px;
+}
+.r{
+	text-align: right;
+}
+</style>
+</head>
+<body id="b">
+<script>
+const getMonthWorkDays = (y, m) => [...Array(new Date(y, m, 0).getDate())].map((_, d) => d + 1).filter(d => ![0, 6].includes(new Date(y, m - 1, d).getDay()) && !l.includes(y * 10000 + m * 100 + d)).length
+const years = [...Array(3)].map((_, i) => (new Date).getFullYear() + i - 1);
+const url = 'https://api.national-holidays.jp/';
+const l = [];
+
+window.onload = async () => {
+	// APIより祝日一覧を取得
+	const promises = years.map(y => getHoliday(y));
+	await Promise.allSettled(promises);
+	// 年末年始休みを追加
+	years.forEach(y => [102, 103, 1229, 1230, 1231].forEach(i => l.push(y * 10000 + i)));
+
+	l.sort();
+
+	console.log(l);
+
+	let s = '<div>有給取得可能日数</div>';
+	s += '<table>';
+	s += '<tr><th style="width: 70px"> </th>' + years.map(y => `<th>${y}年</th>`).join('')  + '</tr>';
+	s += [...Array(12)].map((_, m) => m + 1).map(m => '<tr><th class="r">' + m + '月</th>' + years.map(y => getMonthWorkDays(y, m) - 18).map(d => `<td>${d}</td>`).join('') + '</tr>').join('');
+	s += '</table>';
+	b.innerHTML = s;
+}
+
+async function getHoliday(y){
+	const d = await fetch(url + y);
+	const j = await d.json();
+	j.forEach(i => l.push(parseInt(i.date.replace(/-/g, ''))));
+}
+</script>
+</body>
+</html>

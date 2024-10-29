@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	width: 100%;
+	font-size: 12pt;
+	font-family: "Noto Sans JP", "GT Pressura Mono", sans-serif;
+	user-select: none;
+	color: var(--theme-color);
+}
+html{
+	height: 100%;
+}
+body{
+	position: relative;
+	overflow: hidden;
+	> *{
+		margin: 0 auto;
+		width: var(--board-size);
+		position: relative;
+	}
+	#levelDiv, #remainDiv{
+		text-align: center;
+		color: var(--theme-color);
+		font-weight: bold;
+	}
+	#levelDiv{
+		font-size: 16pt;
+	}
+	#board{
+		height: var(--board-size);
+		border: 1px var(--theme-color) solid;
+		margin: 8px auto;
+		button{
+			width: var(--panel-size);
+			height: var(--panel-size);
+			position: absolute;
+			font-size: 72pt;
+			color: var(--number-color);
+			text-shadow: 1px 1px var(--number-shadow-color);
+			overflow: hidden;
+			vartical-align: middle;
+			line-height: calc(var(--panel-size) - 2px);
+			transition: 0.3s;
+			border-color: var(--panel-border-color);
+			cursor: pointer;
+		}
+	}
+	#p9{
+		display: none;
+	}
+	#nextButton{
+		height: 48px;
+		visibility: hidden;
+		display: block;
+		border-radius: 5px;
+		&:hover{
+			color: var(--theme-hover-color);
+		}
+	}
+}
+button{
+	font-weight: bold;
+	background: white;
+	border: 1px var(--theme-color) solid;
+	&:hover{
+		border-color: var(--theme-hover-color);
+	}
+}
+.panelAnswer{
+	animation: .5s ease infinite alternate both blink-border;
+}
+.confetti{
+	z-index: 100;
+	position: absolute;
+	height: 20px;
+	width: 20px;
+}
+@keyframes blink-border{
+	0% {border-color: Navy;}
+	100% {border-color: Aqua;}
+}
+@keyframes r0{
+	from {transform: skew(20deg) rotateX(0deg);}
+	to {transform: skew(20deg) rotateX(720deg);}
+}
+@keyframes r1{
+	from {transform: rotateY(0deg) skew(20deg);}
+	to {transform: rotateY(720deg) skew(20deg);}
+}
+@keyframes r2{
+	from {transform: skew(20deg) rotateY(0deg) rotateX(0deg);}
+	to {transform: skew(20deg) rotateY(720deg) rotateX(720deg);}
+}
+@keyframes r3{
+	from {transform: rotateY(0deg) skew(20deg) rotateX(0deg);}
+	to {transform: rotateY(360deg) skew(20deg) rotateX(540deg);}
+}
+@keyframes fal{
+	from {top: 0px;}
+	to {top: 1000px;}
+}
+</style>
+</head>
+<body id="body">
+<div id="levelDiv"></div>
+<div id="remainDiv"></div>
+<div id="board"></div>
+<button id="nextButton" onclick="createPanels()">Next（Space, Enter）</button>
+<script type="text/javascript" src="./patterns.js"></script>
+<script>
+const PANEL_SIZE = 250;
+const DEFAULT_PATTERN = '123456789';
+let pattern = DEFAULT_PATTERN;
+let level = parseInt(localStorage.getItem('level'));
+if(!level) level = 1;
+let remain = 1;
+let flg = 0; //(0: 解答中, 1: クリア)
+let confettis = [];
+let pictures = [
+	'https://pbs.twimg.com/media/GaJT-Tib0AI4xS9?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GYPNvsVboAAFJxw?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXqDBx7aEAELnEy?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXp_INKaoAE76eZ?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXp6384aAAAf20-?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXmM8YyawAASVWo?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXl0JEcbMAAa8y_?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXg7Dm7aQAEeUkZ?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXgUUFcaMAAQksF?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GXbxfElbwAAthji?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GIDt-BsboAAMxc3?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GFKGaGjbAAA7P6A?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GE-vgiVacAA75pF?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GEWQsl1bIAA8O1z?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GEPvo0UboAAgGVe?format=jpg&name=900x900',
+	'https://pbs.twimg.com/media/GCjbj3dbcAAzlgB?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GCgo0GOaUAAZbRe?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GCcELO3aMAEqR4h?format=jpg&name=large',
+	'https://pbs.twimg.com/media/GCEp0dDakAAiboS?format=jpg&name=large',
+	'https://pbs.twimg.com/media/FKild5bUUAEODxZ?format=jpg&name=large',
+	'https://pbs.twimg.com/media/E9_8eTnVcAUx2Dz?format=jpg&name=900x900',
+	'https://pbs.twimg.com/media/EsBddkdWMAUyKap?format=jpg&name=large',
+	'https://pbs.twimg.com/media/Ek1Hpf-VkAUJzxX?format=jpg&name=small',
+	'https://pbs.twimg.com/media/EaIW9IrUEAYQGvV?format=jpg&name=large',
+	'https://pbs.twimg.com/media/EaMCKUVUwAAAnhW?format=jpg&name=large',
+	'https://pbs.twimg.com/media/EWonzjwUMAI47DW?format=jpg&name=medium',
+	'https://pbs.twimg.com/media/EP8lbVHUcAAxbBK?format=jpg&name=large',
+	'https://pbs.twimg.com/media/EDcSUvKVAAEJtyk?format=jpg&name=large',
+	'https://pbs.twimg.com/media/DvR1GrBVAAENrqc?format=jpg&name=medium',
+	'https://pbs.twimg.com/media/Dti8u_rVsAAbOPb?format=jpg&name=small',
+	'https://pbs.twimg.com/media/C8pAATpXUAAheSy?format=jpg&name=medium',
+];
+
+// 乱数を整数で取得
+const randInt = (n) => Math.floor(Math.random() * n);
+
+// :rootのcssのvarの初期化
+document.documentElement.style.setProperty('--panel-size', PANEL_SIZE + 'px');
+document.documentElement.style.setProperty('--board-size', PANEL_SIZE * 3 + 2 + 'px');
+// ボードの初期化
+createPanels();
+
+// 問題の作成
+function createPanels(){
+	flg = 0;
+	document.documentElement.style.setProperty('--theme-color', 'Olive');
+	document.documentElement.style.setProperty('--theme-hover-color', 'Khaki');
+	document.documentElement.style.setProperty('--number-color', '#0004');
+	document.documentElement.style.setProperty('--number-shadow-color', '#FFFA');
+	document.documentElement.style.setProperty('--panel-border-color', 'Olive');
+	nextButton.style.visibility = 'hidden';
+	// レベルに合わせた問題を取得
+	let ptrns = Object.entries(patterns).filter(e => e[1] == level).map(e => e[0]);
+	pattern = ptrns[Math.floor(Math.random() * ptrns.length)];
+	// レベルや手数、ボードの表示
+	levelDiv.innerText = `LEVEL: ${level}`;
+	remain = level;
+	remainDiv.innerText = `Moves: ${remain}`;
+	board.innerHTML = [...pattern].map((p, i) => `<button id="p${p}" style="top: ${Math.floor(i / 3) * PANEL_SIZE}px; left: ${i % 3 * PANEL_SIZE}px; background-position: -${(p - 1) % 3 * PANEL_SIZE + 1}px -${Math.floor((p - 1) / 3) * PANEL_SIZE + 1}px; background-image: url(${pictures[level - 1]}); background-size: ${PANEL_SIZE * 3}px;" onclick="panelClick(this, ${p})">${p}</button>`).join('');
+	// 最後に表示するパネルは右下に移動させる
+	p9.style.top = PANEL_SIZE * 2 + 'px';
+	p9.style.left = PANEL_SIZE * 2 + 'px';
+}
+
+// パネルがクリックされた
+function panelClick(e, p){
+	if(flg) return;
+	// パネルの位置取得
+	const n = pattern.indexOf(p);
+	const m = pattern.indexOf('9');
+	const d = m - n;
+	// 移動不能なら処理中止
+	if(n % 3 == 0 && d == -1) return;
+	if(n % 3 == 2 && d == 1) return;
+	if(!([-3, -1 ,1, 3].includes(d))) return;
+	// パネルの移動
+	if(d == -3) e.style.top  = parseInt(e.style.top)  - PANEL_SIZE + 'px';
+	if(d ==  3) e.style.top  = parseInt(e.style.top)  + PANEL_SIZE + 'px';
+	if(d == -1) e.style.left = parseInt(e.style.left) - PANEL_SIZE + 'px';
+	if(d ==  1) e.style.left = parseInt(e.style.left) + PANEL_SIZE + 'px';
+	// 内部配列の変更
+	ptrn = [...pattern];
+	ptrn[m] = p;
+	ptrn[n] = 9;
+	pattern = ptrn.join('');
+	// 残り手数表示
+	remainDiv.innerText = `Moves: ${--remain}`;
+	// 完成判定
+	if(pattern == DEFAULT_PATTERN){
+		document.documentElement.style.setProperty('--number-color', 'transparent');
+		document.documentElement.style.setProperty('--number-shadow-color', 'transparent');
+		document.documentElement.style.setProperty('--panel-border-color', 'transparent');
+		if(remain == 0){
+			// 指定手数で完成
+			document.documentElement.style.setProperty('--theme-color', 'Navy');
+			document.documentElement.style.setProperty('--theme-hover-color', 'Blue');
+			level++;
+			remainDiv.innerText = 'Success!!';
+		} else {
+			// 指定手順をオーバー
+			document.documentElement.style.setProperty('--theme-color', 'Maroon');
+			document.documentElement.style.setProperty('--theme-hover-color', 'Red');
+			if(level > 1) level--;
+			remainDiv.innerText = 'Failure...';
+		}
+		nextButton.style.visibility = 'visible';
+		p9.style.display = 'block';
+		flg = 1;
+		if(level == 32) {
+		// 最高レベルをクリア
+		while(body.firstChild) body.firstChild.remove();
+		body.style.background = 'url(https://pbs.twimg.com/media/C6kM1jaVsAEE__d?format=jpg&name=large) center/auto 100% no-repeat White';
+		window.setInterval(createConfetti, 200);
+		} else {
+			localStorage.setItem('level', level);
+		}
+	}
+	// 残り手数が０以下の場合、正解ガイドを表示
+	if(remain <= 0) {
+		[...document.getElementsByClassName('panelAnswer')].forEach(e => e.classList.remove('panelAnswer'));
+		const rem = patterns[pattern];
+		if(n > 2) checkAnswer(n, n - 3, rem);
+		if(n < 6) checkAnswer(n, n + 3, rem);
+		if(n % 3 > 0) checkAnswer(n, n - 1, rem);
+		if(n % 3 < 2) checkAnswer(n, n + 1, rem);
+	}
+}
+// 正しいルートか確認する
+function checkAnswer(n, m, rem){
+	ptrn = [...pattern];
+	ptrn[n] = ptrn[m];
+	ptrn[m] = '9';
+	if(rem > patterns[ptrn.join('')]){
+		document.getElementById('p' + ptrn[n]).classList.add('panelAnswer');
+	}
+}
+// 紙吹雪を作成する
+function createConfetti(){
+	const d = document.createElement('div');
+	d.classList.add('confetti');
+	d.style.background = ['plum', 'orange', 'yellow', 'lime', 'cyan', 'navy', 'purple'][randInt(7)];
+	d.style.left = `${randInt(window.innerWidth) - 10}px`;
+	d.style.animation = `${1 + Math.random()}s linear infinite r${randInt(4)}, ${randInt(5) + 5}s linear both fal`;
+	body.append(d);
+	confettis.unshift(d);
+	if(confettis.length > 100) confettis.pop().remove();
+}
+// キーボード入力に対応
+onkeydown = e => {
+	// NextButtonのクリック
+	if(['Space', 'Enter'].includes(e.code)){
+		if(!flg) return;
+		const el = document.getElementById('nextButton');
+		if(el) el.click();
+		return;
+	}
+	if(flg) return;
+	if(!e.code.startsWith('Arrow')) return;
+	let p = pattern.indexOf('9');
+	if(e.code == 'ArrowUp') p += 3;
+	if(e.code == 'ArrowDown') p -= 3;
+	if(e.code == 'ArrowLeft') p += 1;
+	if(e.code == 'ArrowRight') p -= 1;
+	panelClick(document.getElementById(`p${pattern[p]}`), pattern[p])
+}
+
+</script>
+</body>
+</html>

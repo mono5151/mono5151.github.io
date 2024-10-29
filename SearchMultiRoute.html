@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	width: 100%;
+	font-size: 12pt;
+}
+input{
+	padding: 4px;
+}
+iframe{
+	border: none;
+}
+#b{
+	height: 200px;
+	display: flex;
+	font-size: 0;
+	> div{
+		width: calc(100% - 200px);
+		height: 100%;
+		input, select{
+			height: 30px;
+			border: 1px gray solid;
+			border-width: 1px 0 0;
+		}
+		textarea{
+			resize: none;
+			height: calc(100% - 60px);
+			padding: 4px;
+			border: 1px gray solid;
+			border-width: 1px 0;
+		}
+	}
+	> iframe{
+		width: 200px;
+		height: 100%;
+	}
+}
+#l > div{
+	height: 200px;
+	> div{
+		height: 20px;
+	}
+	> iframe{
+		height: calc(100% - 20px);
+	}
+}
+</style>
+</head>
+<body>
+<div id="b">
+	<div>
+		<input id="f" onchange="c()" value="現在地">
+		<select id="s" onchange="ad()">
+			<option value="r">公共交通機関</option>
+			<option value="d">車</option>
+			<option value="w">徒歩</option>
+			<option value="b">自転車</option>
+		</select>
+		<textarea id="t" onchange="ad()"></textarea>
+	</div>
+	<iframe id="m" tabindex=-1></iframe>
+</div>
+<div id="l"></div>
+<!-- "https://www.google.com/maps?output=embed&saddr=出発地&daddr=目的地" -->
+<!-- "&dirflg = d[車] | r[公共交通機関] | w[徒歩] | b[自転車]" -->
+<script>
+const c = () => m.src = `https://www.google.com/maps?output=embed&saddr=${f.value}&daddr=${f.value}`;
+const ad = () => l.innerHTML = t.value.split('\n').filter(e => e.length).map(e => `<div><div> ⇒ ${e}</div><iframe tabindex=-1 src="https://www.google.com/maps?output=embed&saddr=${f.value}&daddr=${e}&dirflg=${s.value}"></iframe></div>`).join('');
+c();
+t.focus();
+</script>
+</body>
+</html>

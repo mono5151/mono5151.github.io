@@ -1,0 +1,42 @@
+<!DOCUTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<title>ＰＤＦ表示</title>
+<style>
+*{
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	width: 100%;
+}
+button, input{
+	font-size: 16pt;
+}
+embed{
+	border: none;
+	height: 100%;
+}
+</style>
+</head>
+<body id="b">
+<button onclick="c()" id="bc">クリップボードのPDFのURLを開く</button>
+<iframe src="https://drive.google.com/file/d/1D-Adh2IKVWWBDwqlC8_3yGHtWFs555G4/view?usp=sharingc">
+</iframe>
+<script>
+async function c(){
+	try{
+		const u = String(await navigator.clipboard.readText()).replace(/"/g, '');
+		if(u.slice(-4).toLowerCase() === '.pdf'){
+			b.innerHTML = `<embed src="https://docs.google.com/gview?url=${u}&embedded=true"></embed>`;
+		} else {
+			alert('PDFのURLがコピーされていません。\n' + u);
+		}
+	} catch(error) {
+		alert(error);
+	}
+}
+</script>
+</body>
+</html>
