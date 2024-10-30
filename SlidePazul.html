@@ -57,7 +57,6 @@ body{
 	}
 	#nextButton{
 		height: 48px;
-		visibility: hidden;
 		display: block;
 		border-radius: 5px;
 		&:hover{
@@ -112,7 +111,7 @@ button{
 <div id="levelDiv"></div>
 <div id="remainDiv"></div>
 <div id="board"></div>
-<button id="nextButton" onclick="createPanels()">Next（Space, Enter）</button>
+<button id="nextButton" onclick="createPanels()">Restart（Space, Enter）</button>
 <script type="text/javascript" src="./patterns.js"></script>
 <script>
 const PANEL_SIZE = 110;
@@ -174,7 +173,7 @@ function createPanels(){
 	document.documentElement.style.setProperty('--number-color', '#0004');
 	document.documentElement.style.setProperty('--number-shadow-color', '#FFFA');
 	document.documentElement.style.setProperty('--panel-border-color', 'Olive');
-	nextButton.style.visibility = 'hidden';
+	nextButton.textContent = 'Restart（Space, Enter）';
 	// レベルに合わせた問題を取得
 	let ptrns = Object.entries(patterns).filter(e => e[1] == level).map(e => e[0]);
 	pattern = ptrns[Math.floor(Math.random() * ptrns.length)];
@@ -222,6 +221,7 @@ function panelClick(e, p){
 			document.documentElement.style.setProperty('--theme-hover-color', 'Blue');
 			level++;
 			remainDiv.innerText = 'Success!!';
+			nextButton.textContent = 'Next（Space, Enter）';
 		} else {
 			// 指定手順をオーバー
 			document.documentElement.style.setProperty('--theme-color', 'Maroon');
@@ -229,7 +229,6 @@ function panelClick(e, p){
 			if(level > 1) level--;
 			remainDiv.innerText = 'Failure...';
 		}
-		nextButton.style.visibility = 'visible';
 		p9.style.display = 'block';
 		flg = 1;
 		if(level == 32) {
