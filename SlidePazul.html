@@ -220,24 +220,22 @@ function panelClick(e, p){
 			document.documentElement.style.setProperty('--theme-color', 'Navy');
 			document.documentElement.style.setProperty('--theme-hover-color', 'Blue');
 			level++;
+			localStorage.setItem('level', level % 32);
 			remainDiv.innerText = 'Success!!';
 			nextButton.textContent = 'Next（Space, Enter）';
 		} else {
 			// 指定手順をオーバー
 			document.documentElement.style.setProperty('--theme-color', 'Maroon');
 			document.documentElement.style.setProperty('--theme-hover-color', 'Red');
-			if(level > 1) level--;
 			remainDiv.innerText = 'Failure...';
 		}
 		p9.style.display = 'block';
 		flg = 1;
 		if(level == 32) {
-		// 最高レベルをクリア
-		while(body.firstChild) body.firstChild.remove();
-		body.style.background = 'url(https://pbs.twimg.com/media/C6kM1jaVsAEE__d?format=jpg&name=large) center/auto 100% no-repeat White';
-		window.setInterval(createConfetti, 200);
-		} else {
-			localStorage.setItem('level', level);
+			// 最高レベルをクリア
+			while(body.firstChild) body.firstChild.remove();
+			body.style.background = 'url(https://pbs.twimg.com/media/C6kM1jaVsAEE__d?format=jpg&name=large) center/auto 100% no-repeat White';
+			window.setInterval(createConfetti, 200);
 		}
 	}
 	// 残り手数が０以下の場合、正解ガイドを表示
