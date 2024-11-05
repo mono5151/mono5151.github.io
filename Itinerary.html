@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<style>
+:root{
+	--cap-font: bold 12pt '游ゴシック';
+	--close-time: 0.4s;
+	--theme-border-color: dimgray;
+	--theme-back-color: aliceblue;
+	--slidein-time: 0.5s;
+}
+*{
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	outline: 0;
+	box-sizing: border-box;
+	font: 10pt '游明朝';
+	&::before, &::after{
+		box-sizing: border-box;
+	}
+}
+body{
+	overflow: hidden;
+	background: center/cover no-repeat url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sapporo_television_tower_01.jpg/800px-Sapporo_television_tower_01.jpg');
+	background-color: #FFFE;
+	background-blend-mode: lighten;
+	transition: 1s;
+}
+.backsp{
+	background-color: #FFF1;
+}
+h1{
+	font: bold 14pt/40px '游ゴシック';
+	height: 40px;
+}
+#menu{
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 144px;
+	background: var(--theme-back-color);
+	transition: var(--close-time);
+	border-left: 5px var(--theme-border-color) solid;
+	overflow: hidden;
+	padding-top: 16px;
+	z-index: 10;
+	> div{
+		height: 40px;
+		padding-left: 8px;
+		font: var(--cap-font);
+		line-height: 40px;
+		cursor: pointer;
+		&:hover{
+			background: white;
+		}
+	}
+}
+#menuclose{
+	width: 40px;
+	height: 40px;
+	top: 8px;
+	right: 156px;
+	border: 1px var(--theme-border-color) solid;
+	position: fixed;
+	z-index: 20;
+	background: var(--theme-back-color);
+	transition: var(--close-time);
+	&::after, &::before{
+		content: '';
+		display: block;
+		width: 40px;
+		height: 0;
+		transition: var(--close-time), border calc(var(--close-time) / 2);
+		border: 1px var(--theme-border-color) solid;
+		border-width: 1px 0;
+	}
+	&::before{
+		transform: translate(-1px, 18px) rotateZ(45deg);
+	}
+	&::after{
+		transform: translate(-1px, 16px) rotateZ(-45deg);
+	}
+}
+#menuclose.close{
+	right: 12pt;
+	&::after, &::before{
+		width: 30px;
+	}
+	&::before{
+		transform: translate(4px, 18px);
+	}
+	&::after{
+		height: 22px;
+		border-width: 2px 0;
+		transform: translate(4px, 6px);
+	}
+	& ~ #menu{
+		width: 5px;
+	}
+}
+#main{
+	padding: 8px 16px 8px 8px;
+	overflow: hidden auto;
+	scrollbar-width: none;
+	-ms-overflow-style: none;
+	&::-webkit-scrollbar{
+		display:none;
+	}
+	.place{
+		animation: var(--slidein-time) ease-out slidein2;
+		height: 100px;
+		display: flex;
+		margin-bottom: 8px;
+		.image{
+			width: 100px;
+			height: calc(100% - 4px);
+			margin-top: 4px;
+			border: 1px var(--theme-border-color) solid;
+			img{
+				object-fit: cover;
+				width: 100%;
+				height: 100%
+			}
+		}
+		> div{
+			width: calc(100% - 100px);
+			> div{
+				margin-left: 8px;
+				height: auto;
+			}
+			.cap{
+				font: var(--cap-font);
+			}
+		}
+	}
+	.move{
+		animation: var(--slidein-time) ease-out slidein;
+		height: auto;
+		display: flex;
+		margin: 8px 0;
+		.arrow{
+			width: 24px;
+			height: auto;
+			&::after, &::before{
+				content: '';
+				display: block;
+				width: 0;
+			}
+			&::before{
+				height: calc(100% - 7px);
+				border-left: 6px var(--theme-border-color) solid;
+				margin: 0 5px;
+			}
+			&::after{
+				border: 8px transparent solid;
+				border-top-color: var(--theme-border-color);
+				border-bottom: none;
+			}
+		}
+		.map{
+			width: calc(100% - 24px);
+			div{
+				height: 16px;
+				line-height: 16px;
+				text-decoration: underline;
+				cursor: pointer;
+			}
+			iframe{
+				height: 256px;
+				border: 1px var(--theme-border-color) solid;
+			}
+		}
+	}
+	.topcap, .topdesc, .topdate{
+		height: auto;
+		position: fixed;
+	}
+	.topcap{
+		top: 60%;
+		text-align: center;
+		font: bold 48pt '游ゴシック';
+		color: khaki;
+		text-shadow: 3px 2px black;
+		span{
+			font: 28pt '游明朝';
+		}
+	}
+	.topdesc{
+		top: 60%;
+		width: calc(100% - 96px);
+		margin: 0 48px;
+		text-align: center;
+		color: #FFF6;
+		div{
+			display: flex;
+			heigth: 48px;
+			span{
+				font: bold 48pt '游ゴシック';
+				line-height: 50px;
+			}
+		}
+	}
+	.topdate{
+		display: table;
+		width: 80px;
+		height: 80px;
+		top: calc(60% + 96px);
+		right: 24px;
+		background: khaki;
+		border-radius: 50%;
+		text-align: center;
+		div {
+			display: table-cell;
+			vertical-align: middle;
+			font: bold 14pt/20px '游ゴシック';
+			text-shadow: 1px 1px black;
+			color: white;
+		}
+	}
+}
+.dispnone{
+	display: none;
+}
+@keyframes slidein{
+	0%   {transform: translateX(100%);}
+	100% {transform: translateX(  0%);}
+}
+@keyframes slidein2{
+	0%   {transform: translateX(-100%);}
+	100% {transform: translateX(   0%);}
+}
+</style>
+</head>
+<body id="body">
+<div id="menuclose" class="close" onclick="this.classList.toggle('close')"></div>
+<div id="menu">
+	<div onclick="showTop()">TOP</div>
+</div>
+<div id="main"></div>
+<script>
+const l = {
+	'2024/11/07(木)': [
+		{type: 'p', cap: '新千歳空港',
+			desc: '09:55 村松着\n10:05 木地、岡村、大橋着\n10:40 斉藤着',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg'
+		},
+		{type: 'p', cap: '11:00 エビそば一幻',
+			desc: '昼食',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg',
+			url: 'http://www.ebisoba.com/'
+		},
+		{type: 'p', cap: '12:00 超ビッグソフトクリーム&生食感チーズ',
+			desc: '[SNOW] CHEESE',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg',
+			url: 'https://snowcheese.jp/'
+		},
+		{type: 'm', from: '新千歳空港', to: 'Experience札幌'},
+		{type: 'p', cap: '14:00 宿',
+			desc: '岩さん以外チェックイン',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Tokyo_Skytree_2014_%E2%85%A2.jpg'
+		},
+		{type: 'p', cap: '新千歳空港',
+			desc: '14:00 岩崎着',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg'
+		},
+		{type: 'p', cap: '15:30 宿',
+			desc: '岩さんチェックイン',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/8/84/Tokyo_Skytree_2014_%E2%85%A2.jpg'
+		},
+		{type: 'm', from: 'Experience札幌', to: '藻岩山ロープウェイ'},
+		{type: 'p', cap: '16:30 藻岩山ロープウェイ',
+			desc: '正式名称は日本電波塔である。\n高さは333メートル。',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/f/f6/Tokyo_Tower_200207.jpg'
+		},
+		{type: 'm', from: '藻岩山ロープウェイ', to: 'はちきょう別邸おやじ'},
+		{type: 'p', cap: '19:30 海味はちきょう 別邸おやじ',
+			desc: '夕食\nはちきょうコース',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg'
+		},
+		{type: 'm', from: 'はちきょう別邸おやじ', to: '大通公園', dir: 'w'},
+		{type: 'p', cap: '21:30 大通公園',
+			desc: 'お散歩',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg'
+		},
+		{type: 'm', from: '大通公園', to: '味の時計台 駅前通り総本店', dir: 'w'},
+		{type: 'p', cap: '22:00 味の時計台',
+			desc: '24時まで営業',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg'
+		},
+		{type: 'm', from: '味の時計台 駅前通り総本店', to: 'Experience札幌'},
+		{type: 'p', cap: '22:30 宿',
+			desc: '帰宅\n23:30 就寝',
+			img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/Tokyo-STA_Marunouchi-Entrance_2023.jpg/800px-Tokyo-STA_Marunouchi-Entrance_2023.jpg'
+		},
+	],
+};
+
+function showTop(){
+	while(main.firstChild) main.firstChild.remove();
+	body.classList.add('backsp');
+	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
+	const d1 = getElement('div', main, 'topdesc');
+	['HOKKAIDO', 'CHITOSE', 'SAPPORO', 'HAKODATE'].forEach(s => {
+		const d = getElement('div', d1);
+		[...s].forEach(e => getElement('span', d).textContent = e)
+	});
+	const d0 = getElement('div', main, 'topcap');
+	d0.innerHTML = '1<span>日</span>5<span>食</span>2024<span>秋</span>';
+	const d2 = getElement('div', main, 'topdate');
+	const d3 = getElement('div', d2)
+	d3.innerText = '11/7 -\n11/10';
+}
+
+function showSchedule(d){
+	while(main.firstChild) main.firstChild.remove();
+	if(body.classList.contains('backsp')) body.classList.remove('backsp');
+	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
+	const d0 = getElement('h1', main);
+	d0.textContent = d;
+	l[d].forEach((e, i) => {
+		const d1 = getElement('div', main, e.type == 'm' ? 'move' : 'place');
+		if(e.type == 'm'){
+			const d2 = getElement('div', d1, 'arrow');
+			const d3 = getElement('div', d1, 'map');
+			const d4 = getElement('div', d3);
+			d4.textContent = `${e.from} → ${e.to}(${e.dir == 'w' ? '徒歩' : e.dir == 'd' ? '車' : '公共機関'})▼`;
+			const ifr = getElement('iframe', d3, 'dispnone');
+			d4.onclick = () => ifr.classList.toggle('dispnone');
+			ifr.src = `https://www.google.com/maps?output=embed&saddr=${e.from}&daddr=${e.to}&dirflg=${e.dir ? e.dir : 'r'}`;
+		} else {
+			const d2 = getElement('div', d1, 'image');
+			const im = getElement('img', d2);
+			im.src = e.img;
+			const d3 = getElement('div', d1);
+			const d4 = getElement('div', d3, 'cap');
+			if(e.url){
+				const a1 = getElement('a', d4, 'cap')
+				a1.href = e.url;
+				a1.textContent = e.cap;
+			} else {
+				d4.textContent = e.cap;
+			}
+			const d5 = getElement('div', d3);
+			d5.innerText = e.desc;
+		}
+	});
+}
+
+function getElement(e, p, c){
+	const el = document.createElement(e);
+	if(c) el.classList.add(c);
+	p.append(el);
+	return el;
+}
+
+window.onload = () => {
+	Object.keys(l).forEach(k => {
+		const d = getElement('div', menu);
+		d.textContent = k;
+		d.onclick = () => showSchedule(k);
+	});
+
+	showTop();
+}
+</script>
+</body>
+</html>
