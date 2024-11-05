@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+  <title>1日5食2024秋</title>
 <style>
 :root{
 	--cap-font: bold 12pt '游ゴシック';
@@ -26,7 +27,7 @@
 }
 body{
 	overflow: hidden;
-	background: center/cover no-repeat url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sapporo_television_tower_01.jpg/800px-Sapporo_television_tower_01.jpg');
+	background: top no-repeat url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sapporo_television_tower_01.jpg/800px-Sapporo_television_tower_01.jpg');
 	background-color: #FFFD;
 	background-blend-mode: lighten;
 	transition: 1s;
@@ -43,7 +44,7 @@ h1{
 	position: fixed;
 	top: 0;
 	right: 0;
-	width: 144px;
+	width: 200px;
 	background: var(--theme-back-color);
 	transition: var(--close-time);
 	border-left: 5px var(--theme-border-color) solid;
@@ -51,10 +52,10 @@ h1{
 	padding-top: 16px;
 	z-index: 10;
 	> div{
-		height: 40px;
-		padding-left: 8px;
-		font: var(--cap-font);
-		line-height: 40px;
+		height: 50px;
+		padding-left: 16px;
+		font: 16pt '游ゴシック';
+		line-height: 50px;
 		cursor: pointer;
 		&:hover{
 			background: white;
@@ -65,7 +66,7 @@ h1{
 	width: 40px;
 	height: 40px;
 	top: 8px;
-	right: 156px;
+	right: 212px;
 	border: 1px var(--theme-border-color) solid;
 	position: fixed;
 	z-index: 20;
@@ -180,9 +181,11 @@ h1{
 	.topcap, .topdesc, .topdate{
 		height: auto;
 		position: fixed;
+		user-select: none;
 	}
 	.topcap{
 		top: 60%;
+		left: -8px;
 		text-align: center;
 		font: bold 48pt '游ゴシック';
 		color: var(--theme-sub-color);
@@ -193,6 +196,7 @@ h1{
 	}
 	.topdesc{
 		top: 60%;
+		left: -8px;
 		text-align: center;
 		color: #FFF6;
 		font: bold 48pt '游ゴシック';
@@ -200,9 +204,9 @@ h1{
 	}
 	.topdate{
 		display: table;
-		width: 80px;
-		height: 80px;
-		top: calc(60% + 96px);
+		width: 96px;
+		height: 96px;
+		top: calc(60% + 112px);
 		right: 24px;
 		background: var(--theme-sub-color);
 		border-radius: 50%;
@@ -413,7 +417,7 @@ function showTop(){
 	d0.innerHTML = '1<span>日</span>5<span>食</span>2024<span>秋</span>';
 	const d2 = getElement('div', main, 'topdate');
 	const d3 = getElement('div', d2)
-	d3.innerText = '11/7 -\n11/10';
+	d3.innerText = '11/7(木) -\n11/10(日)';
 }
 
 function showSchedule(d){
