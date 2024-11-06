@@ -54,7 +54,7 @@ h1{
 	top: 0;
 	right: 0;
 	width: var(--menu-width);
-	background: var(--theme-back-color);
+	background: var(--theme-hover-color);
 	transition: var(--close-time);
 	border-left: 5px var(--theme-border-color) solid;
 	overflow: hidden;
@@ -75,7 +75,7 @@ h1{
 			font: var(--title-number-font);
 		}
 		&:hover{
-			background: var(--theme-hover-color);
+			background: var(--theme-back-color);
 		}
 	}
 }
@@ -87,10 +87,10 @@ h1{
 	border: 1px var(--theme-border-color) solid;
 	position: fixed;
 	z-index: 20;
-	background: var(--theme-back-color);
+	background: var(--theme-hover-color);
 	transition: var(--close-time);
 	&:hover{
-		background: var(--theme-hover-color);
+		background: var(--theme-back-color);
 	}
 	&::after, &::before{
 		content: '';
