@@ -7,11 +7,13 @@
 <style>
 :root{
 	--cap-font: bold 12pt '游ゴシック';
+	--title-font: bold 16pt/50px '游ゴシック';
 	--close-time: 0.4s;
 	--theme-border-color: dimgray;
-	--theme-back-color: aliceblue;
-	--theme-sub-color: khaki;
+	--theme-back-color: khaki;
 	--slidein-time: 0.5s;
+	--menu-width: 200px;
+	--close-box-size: 56px;
 }
 *{
 	width: 100%;
@@ -36,38 +38,38 @@ body{
 	background-color: #FFF1;
 }
 h1{
-	font: bold 16pt/40px '游ゴシック';
+	font: var(--title-font);
 	height: 40px;
-	text-shadow: 1px 1px var(--theme-sub-color);
+	text-shadow: 1px 1px var(--theme-back-color);
 	margin-bottom: 8px;
 }
 #menu{
 	position: fixed;
 	top: 0;
 	right: 0;
-	width: 200px;
+	width: var(--menu-width);
 	background: var(--theme-back-color);
 	transition: var(--close-time);
 	border-left: 5px var(--theme-border-color) solid;
 	overflow: hidden;
-	padding-top: 16px;
 	z-index: 10;
 	> div{
 		height: 50px;
 		padding-left: 16px;
-		font: 16pt '游ゴシック';
-		line-height: 50px;
+		font: var(--title-font);
 		cursor: pointer;
+		border-bottom: 1px var(--theme-border-color) solid;
+		user-select: none;
 		&:hover{
-			background: white;
+			background: linen;
 		}
 	}
 }
 #menuclose{
-	width: 40px;
-	height: 40px;
+	width: var(--close-box-size);
+	height: var(--close-box-size);
 	top: 8px;
-	right: 212px;
+	right: calc(var(--menu-width) + 12px);
 	border: 1px var(--theme-border-color) solid;
 	position: fixed;
 	z-index: 20;
@@ -76,31 +78,31 @@ h1{
 	&::after, &::before{
 		content: '';
 		display: block;
-		width: 40px;
+		width: var(--close-box-size);
 		height: 0;
 		transition: var(--close-time), border calc(var(--close-time) / 2);
 		border: 1px var(--theme-border-color) solid;
 		border-width: 1px 0;
 	}
 	&::before{
-		transform: translate(-1px, 18px) rotateZ(45deg);
+		transform: translate(-1px, calc(var(--close-box-size) / 2 - 2px)) rotateZ(45deg);
 	}
 	&::after{
-		transform: translate(-1px, 16px) rotateZ(-45deg);
+		transform: translate(-1px, calc(var(--close-box-size) / 2 - 4px)) rotateZ(-45deg);
 	}
 }
 #menuclose.close{
 	right: 12pt;
 	&::after, &::before{
-		width: 30px;
+		width: calc(var(--close-box-size) - 10px);
 	}
 	&::before{
-		transform: translate(4px, 18px);
+		transform: translate(4px, calc(var(--close-box-size) / 2 - 2px));
 	}
 	&::after{
-		height: 22px;
+		height: calc(var(--close-box-size) / 2 + 2px);
 		border-width: 2px 0;
-		transform: translate(4px, 6px);
+		transform: translate(4px, calc(var(--close-box-size) / 4 - 4px));
 	}
 	& ~ #menu{
 		width: 5px;
@@ -167,11 +169,13 @@ h1{
 		}
 		.map{
 			width: calc(100% - 24px);
+			height: auto;
 			div{
-				height: 16px;
+				height: 20px;
 				line-height: 16px;
 				text-decoration: underline;
 				cursor: pointer;
+				white-space: nowrap;
 			}
 			iframe{
 				height: 384px;
@@ -186,10 +190,10 @@ h1{
 	}
 	.topcap{
 		top: 60%;
-		left: -8px;
+		left: -4px;
 		text-align: center;
 		font: bold 48pt '游ゴシック';
-		color: var(--theme-sub-color);
+		color: var(--theme-back-color);
 		text-shadow: 3px 2px black;
 		span{
 			font: 28pt '游明朝';
@@ -197,7 +201,7 @@ h1{
 	}
 	.topdesc{
 		top: 60%;
-		left: -8px;
+		left: -4px;
 		text-align: center;
 		color: #FFF6;
 		font: bold 48pt '游ゴシック';
@@ -209,9 +213,10 @@ h1{
 		height: 96px;
 		top: calc(60% + 112px);
 		right: 24px;
-		background: var(--theme-sub-color);
+		background: var(--theme-back-color);
 		border-radius: 50%;
 		text-align: center;
+		transform: rotateZ(15deg);
 		div {
 			display: table-cell;
 			vertical-align: middle;
@@ -221,7 +226,7 @@ h1{
 		}
 	}
 }
-.dispnone{
+.dispnone, .directions-waypoint, .directions-separator{
 	display: none;
 }
 @keyframes slidein{
@@ -413,12 +418,12 @@ function showTop(){
 	body.classList.add('backsp');
 	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
 	const d1 = getElement('div', main, 'topdesc');
-	d1.textContent = 'HOKKAIDO\nSHINCHITOSE\nSAPPORO\nOTARU';
+	d1.innerText = 'HOKKAIDO\nSHINCHITOSE\nSAPPORO\nOTARU';
 	const d0 = getElement('div', main, 'topcap');
 	d0.innerHTML = '1<span>日</span>5<span>食</span>2024<span>秋</span>';
 	const d2 = getElement('div', main, 'topdate');
 	const d3 = getElement('div', d2)
-	d3.innerText = '11/7(木) -\n11/10(日)';
+	d3.innerText = '11/7(木)-\n11/10(日)';
 }
 
 function showSchedule(d){
@@ -436,7 +441,7 @@ function showSchedule(d){
 			d4.textContent = `${e.from} → ${e.to}(${e.dir == 'w' ? '徒歩' : e.dir == 'd' ? '車' : '公共'})▼`;
 			const ifr = getElement('iframe', d3, 'dispnone');
 			d4.onclick = () => ifr.classList.toggle('dispnone');
-			ifr.src = `https://www.google.com/maps?output=embed&saddr=${e.from}&daddr=${e.to}&dirflg=${e.dir ? e.dir : 'r'}`;
+			ifr.src = `https://www.google.com/maps?output=embed&saddr=${e.from}&daddr=${e.to}&dirflg=${e.dir ? e.dir : 'r'}&hl=ja`;
 		} else {
 			const d2 = getElement('div', d1, 'image');
 			const im = getElement('img', d2);
@@ -471,7 +476,12 @@ window.onload = () => {
 		d.onclick = () => showSchedule(k);
 	});
 
-	showTop();
+	const today = `${new Date().toLocaleDateString('sv').replace(/-/g, '/')}(${['日', '月', '火', '水', '木', '金', '土'][new Date().getDay()]})`;
+	if(today in l){
+		showSchedule(today);
+	} else {
+		showTop();
+	}
 }
 </script>
 </body>
