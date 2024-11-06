@@ -13,6 +13,7 @@
 	--close-time: 0.4s;
 	--theme-border-color: dimgray;
 	--theme-back-color: khaki;
+	--theme-hover-color: linen;
 	--slidein-time: 0.5s;
 	--menu-width: 208px;
 	--close-box-size: 56px;
@@ -74,7 +75,7 @@ h1{
 			font: var(--title-number-font);
 		}
 		&:hover{
-			background: linen;
+			background: var(--theme-hover-color);
 		}
 	}
 }
@@ -89,7 +90,7 @@ h1{
 	background: var(--theme-back-color);
 	transition: var(--close-time);
 	&:hover{
-		background: linen;
+		background: var(--theme-hover-color);
 	}
 	&::after, &::before{
 		content: '';
@@ -202,7 +203,6 @@ h1{
 		}
 	}
 	.topcap, .topdesc, .topdate{
-		height: auto;
 		position: fixed;
 		user-select: none;
 	}
@@ -210,7 +210,8 @@ h1{
 		top: 50%;
 		left: -4px;
 		text-align: center;
-		font: bold 56pt '游ゴシック';
+		height: 75px;
+		font: bold 56pt/75px '游ゴシック';
 		color: var(--theme-back-color);
 		text-shadow: 3px 2px black;
 		span{
@@ -218,7 +219,8 @@ h1{
 		}
 	}
 	.topdesc{
-		top: calc(50% + 12px);
+		height: auto;
+		top: calc(50% - 12px);
 		left: -4px;
 		display: flex;
 		justify-content: center;
