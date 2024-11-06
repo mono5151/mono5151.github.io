@@ -190,10 +190,10 @@ h1{
 		user-select: none;
 	}
 	.topcap{
-		top: 60%;
+		top: 50%;
 		left: -4px;
 		text-align: center;
-		font: bold 48pt '游ゴシック';
+		font: bold 48pt/50px '游ゴシック';
 		color: var(--theme-back-color);
 		text-shadow: 3px 2px black;
 		span{
@@ -201,18 +201,17 @@ h1{
 		}
 	}
 	.topdesc{
-		top: 60%;
+		top: calc(50% - 16px);
 		left: -4px;
 		text-align: center;
 		color: #FFF6;
 		font: bold 48pt '游ゴシック';
-		line-height: 50px;
 	}
 	.topdate{
 		display: table;
 		width: 96px;
 		height: 96px;
-		top: calc(60% + 112px);
+		top: calc(50% + 104px);
 		right: 24px;
 		background: var(--theme-back-color);
 		border-radius: 50%;
@@ -227,7 +226,7 @@ h1{
 		}
 	}
 }
-.dispnone, .directions-waypoint, .directions-separator{
+.dispnone{
 	display: none;
 }
 @keyframes slidein{
