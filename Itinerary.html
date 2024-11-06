@@ -7,12 +7,14 @@
 <style>
 :root{
 	--cap-font: bold 12pt '游ゴシック';
-	--title-font: bold 16pt/50px '游ゴシック';
+	--title-height: 50px;
+	--title-font: 16pt '游明朝';
+	--title-number-font: bold 20pt/var(--title-height) '游ゴシック';
 	--close-time: 0.4s;
 	--theme-border-color: dimgray;
 	--theme-back-color: khaki;
 	--slidein-time: 0.5s;
-	--menu-width: 200px;
+	--menu-width: 208px;
 	--close-box-size: 56px;
 }
 *{
@@ -29,7 +31,7 @@
 }
 body{
 	overflow: hidden;
-	background: top no-repeat url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sapporo_television_tower_01.jpg/800px-Sapporo_television_tower_01.jpg');
+	background: top no-repeat url('https://helio-hostel.jp/cms/wp-content/uploads/2023/04/pixta_43892374_L-scaled.jpg');
 	background-color: #FFFD;
 	background-blend-mode: lighten;
 	transition: 1s;
@@ -38,10 +40,13 @@ body{
 	background-color: #FFF1;
 }
 h1{
+	height: var(--title-height);
 	font: var(--title-font);
-	height: 40px;
-	text-shadow: 1px 1px var(--theme-back-color);
+	text-shadow: 1px 1px white;
 	margin-bottom: 8px;
+	span{
+		font: var(--title-number-font);
+	}
 }
 #menu{
 	position: fixed;
@@ -53,13 +58,21 @@ h1{
 	border-left: 5px var(--theme-border-color) solid;
 	overflow: hidden;
 	z-index: 10;
+	padding-top: calc(var(--close-box-size) + 16px);
+	> div:first-child{
+		border-top: 1px var(--theme-border-color) solid;
+	}
 	> div{
-		height: 50px;
-		padding-left: 16px;
+		height: var(--title-height);
+		padding-left: 8px;
 		font: var(--title-font);
+		text-shadow: 1px 1px white;
 		cursor: pointer;
 		border-bottom: 1px var(--theme-border-color) solid;
 		user-select: none;
+		span{
+			font: var(--title-number-font);
+		}
 		&:hover{
 			background: linen;
 		}
@@ -69,20 +82,23 @@ h1{
 	width: var(--close-box-size);
 	height: var(--close-box-size);
 	top: 8px;
-	right: calc(var(--menu-width) + 12px);
+	right: 12px;
 	border: 1px var(--theme-border-color) solid;
 	position: fixed;
 	z-index: 20;
 	background: var(--theme-back-color);
 	transition: var(--close-time);
+	&:hover{
+		background: linen;
+	}
 	&::after, &::before{
 		content: '';
 		display: block;
 		width: var(--close-box-size);
 		height: 0;
 		transition: var(--close-time), border calc(var(--close-time) / 2);
-		border: 1px var(--theme-border-color) solid;
-		border-width: 1px 0;
+		border: 0 var(--theme-border-color) solid;
+		border-width: 2px 0 0;
 	}
 	&::before{
 		transform: translate(-1px, calc(var(--close-box-size) / 2 - 2px)) rotateZ(45deg);
@@ -90,22 +106,21 @@ h1{
 	&::after{
 		transform: translate(-1px, calc(var(--close-box-size) / 2 - 4px)) rotateZ(-45deg);
 	}
-}
-#menuclose.close{
-	right: 12pt;
-	&::after, &::before{
-		width: calc(var(--close-box-size) - 10px);
-	}
-	&::before{
-		transform: translate(4px, calc(var(--close-box-size) / 2 - 2px));
-	}
-	&::after{
-		height: calc(var(--close-box-size) / 2 + 2px);
-		border-width: 2px 0;
-		transform: translate(4px, calc(var(--close-box-size) / 4 - 4px));
-	}
-	& ~ #menu{
-		width: 5px;
+	&.close{
+		&::after, &::before{
+			width: calc(var(--close-box-size) - 10px);
+		}
+		&::before{
+			transform: translate(4px, calc(var(--close-box-size) / 2 - 2px));
+		}
+		&::after{
+			height: calc(var(--close-box-size) / 2 + 2px);
+			border-width: 2px 0;
+			transform: translate(4px, calc(var(--close-box-size) / 4 - 4px));
+		}
+		& ~ #menu{
+			width: 5px;
+		}
 	}
 }
 #main{
@@ -136,10 +151,12 @@ h1{
 			> div{
 				margin-left: 8px;
 				height: auto;
-			}
-			.cap{
-				font: var(--cap-font);
 				line-height: 20px;
+			}
+			.cap, a:any-link{
+				font: var(--cap-font);
+				color: var(--theme-border-color);
+				text-shadow: 1px 1px var(--theme-back-color);
 			}
 		}
 	}
@@ -201,11 +218,18 @@ h1{
 		}
 	}
 	.topdesc{
-		top: calc(50% - 16px);
+		top: calc(50% + 12px);
 		left: -4px;
-		text-align: center;
-		color: #FFF6;
-		font: bold 48pt/51px '游ゴシック';
+		display: flex;
+		justify-content: center;
+		div{
+			width: 1000px;
+			text-align: center;
+			color: #FFF3;
+			font: bold 48pt/52px '游ゴシック';
+			white-space: nowrap;
+			user-select: none;
+		}
 	}
 	.topdate{
 		display: table;
@@ -217,6 +241,7 @@ h1{
 		border-radius: 50%;
 		text-align: center;
 		transform: rotateZ(15deg);
+		box-shadow: 3px 2px black;
 		div {
 			display: table-cell;
 			vertical-align: middle;
@@ -242,7 +267,7 @@ h1{
 <body id="body">
 <div id="menuclose" class="close" onclick="this.classList.toggle('close')"></div>
 <div id="menu">
-	<div onclick="showTop()">TOP</div>
+	<div onclick="showTop()"><span>TOP</span></div>
 </div>
 <div id="main"></div>
 <script>
@@ -410,7 +435,8 @@ function showTop(){
 	body.classList.add('backsp');
 	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
 	const d1 = getElement('div', main, 'topdesc');
-	d1.innerText = 'HOKKAIDO\nSHINCHITOSE\nSAPPORO\nOTARU';
+	const d4 = getElement('div', d1)
+	d4.innerText = 'HOKKAIDO\nSHINCHITOSE\nSAPPORO\nOTARU';
 	const d0 = getElement('div', main, 'topcap');
 	d0.innerHTML = '1<span>日</span>5<span>食</span>2024<span>秋</span>';
 	const d2 = getElement('div', main, 'topdate');
@@ -423,7 +449,7 @@ function showSchedule(d){
 	if(body.classList.contains('backsp')) body.classList.remove('backsp');
 	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
 	const d0 = getElement('h1', main);
-	d0.textContent = d;
+	d0.innerHTML = d.replace(/([^\(\)\/]+)/g, '<span>$1</span>');
 	l[d].forEach((e, i) => {
 		const d1 = getElement('div', main, e.type == 'm' ? 'move' : 'place');
 		if(e.type == 'm'){
@@ -464,7 +490,7 @@ function getElement(e, p, c){
 window.onload = () => {
 	Object.keys(l).forEach(k => {
 		const d = getElement('div', menu);
-		d.textContent = k;
+		d.innerHTML = k.replace(/([^\(\)\/]+)/g, '<span>$1</span>');
 		d.onclick = () => showSchedule(k);
 	});
 
