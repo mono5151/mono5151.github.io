@@ -1,17 +1,23 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-  <title>1日5食2024秋</title>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta property="og:image" content="https://imgur.com/xMYtNKd.png" />
+	<title>1日5食2024秋</title>
 <style>
 :root{
 	--cap-font: bold 12pt '游ゴシック';
+	--title-height: 50px;
+	--title-font: 16pt '游明朝';
+	--title-number-font: bold 20pt/var(--title-height) '游ゴシック';
 	--close-time: 0.4s;
 	--theme-border-color: dimgray;
-	--theme-back-color: aliceblue;
-	--theme-sub-color: khaki;
+	--theme-back-color: khaki;
+	--theme-hover-color: linen;
 	--slidein-time: 0.5s;
+	--menu-width: 208px;
+	--close-box-size: 56px;
 }
 *{
 	width: 100%;
@@ -21,13 +27,14 @@
 	outline: 0;
 	box-sizing: border-box;
 	font: 11pt '游明朝';
+	user-select: none;
 	&::before, &::after{
 		box-sizing: border-box;
 	}
 }
 body{
 	overflow: hidden;
-	background: top no-repeat url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Sapporo_television_tower_01.jpg/800px-Sapporo_television_tower_01.jpg');
+	background: top no-repeat url('https://helio-hostel.jp/cms/wp-content/uploads/2023/04/pixta_43892374_L-scaled.jpg');
 	background-color: #FFFD;
 	background-blend-mode: lighten;
 	transition: 1s;
@@ -36,74 +43,87 @@ body{
 	background-color: #FFF1;
 }
 h1{
-	font: bold 16pt/40px '游ゴシック';
-	height: 40px;
-	text-shadow: 1px 1px var(--theme-sub-color);
+	height: var(--title-height);
+	font: var(--title-font);
+	text-shadow: 1px 1px white;
 	margin-bottom: 8px;
+	span{
+		font: var(--title-number-font);
+	}
 }
 #menu{
 	position: fixed;
 	top: 0;
 	right: 0;
-	width: 200px;
-	background: var(--theme-back-color);
+	width: var(--menu-width);
+	background: var(--theme-hover-color);
 	transition: var(--close-time);
 	border-left: 5px var(--theme-border-color) solid;
 	overflow: hidden;
-	padding-top: 16px;
 	z-index: 10;
+	padding-top: calc(var(--close-box-size) + 16px);
+	> div:first-child{
+		border-top: 1px var(--theme-border-color) solid;
+	}
 	> div{
-		height: 50px;
-		padding-left: 16px;
-		font: 16pt '游ゴシック';
-		line-height: 50px;
+		height: var(--title-height);
+		padding-left: 8px;
+		font: var(--title-font);
+		text-shadow: 1px 1px white;
 		cursor: pointer;
+		border-bottom: 1px var(--theme-border-color) solid;
+		user-select: none;
+		span{
+			font: var(--title-number-font);
+		}
 		&:hover{
-			background: white;
+			background: var(--theme-back-color);
 		}
 	}
 }
 #menuclose{
-	width: 40px;
-	height: 40px;
+	width: var(--close-box-size);
+	height: var(--close-box-size);
 	top: 8px;
-	right: 212px;
+	right: 12px;
 	border: 1px var(--theme-border-color) solid;
 	position: fixed;
 	z-index: 20;
-	background: var(--theme-back-color);
+	background: var(--theme-hover-color);
 	transition: var(--close-time);
+	&:hover{
+		background: var(--theme-back-color);
+	}
 	&::after, &::before{
 		content: '';
 		display: block;
-		width: 40px;
+		width: var(--close-box-size);
 		height: 0;
 		transition: var(--close-time), border calc(var(--close-time) / 2);
-		border: 1px var(--theme-border-color) solid;
-		border-width: 1px 0;
+		border: 0 var(--theme-border-color) solid;
+		border-width: 2px 0 0;
 	}
 	&::before{
-		transform: translate(-1px, 18px) rotateZ(45deg);
+		transform: translate(-1px, calc(var(--close-box-size) / 2 - 2px)) rotateZ(45deg);
 	}
 	&::after{
-		transform: translate(-1px, 16px) rotateZ(-45deg);
+		transform: translate(-1px, calc(var(--close-box-size) / 2 - 4px)) rotateZ(-45deg);
 	}
-}
-#menuclose.close{
-	right: 12pt;
-	&::after, &::before{
-		width: 30px;
-	}
-	&::before{
-		transform: translate(4px, 18px);
-	}
-	&::after{
-		height: 22px;
-		border-width: 2px 0;
-		transform: translate(4px, 6px);
-	}
-	& ~ #menu{
-		width: 5px;
+	&.close{
+		&::after, &::before{
+			width: calc(var(--close-box-size) - 10px);
+		}
+		&::before{
+			transform: translate(4px, calc(var(--close-box-size) / 2 - 2px));
+		}
+		&::after{
+			height: calc(var(--close-box-size) / 2 + 2px);
+			border-width: 2px 0;
+			transform: translate(4px, calc(var(--close-box-size) / 4 - 4px));
+		}
+		& ~ #menu{
+			width: 5px;
+		}
 	}
 }
 #main{
@@ -134,10 +154,12 @@ h1{
 			> div{
 				margin-left: 8px;
 				height: auto;
-			}
-			.cap{
-				font: var(--cap-font);
 				line-height: 20px;
+			}
+			.cap, a:any-link{
+				font: var(--cap-font);
+				color: var(--theme-border-color);
+				text-shadow: 1px 1px var(--theme-back-color);
 			}
 		}
 	}
@@ -167,51 +189,62 @@ h1{
 		}
 		.map{
 			width: calc(100% - 24px);
+			height: auto;
 			div{
-				height: 16px;
+				height: 20px;
 				line-height: 16px;
 				text-decoration: underline;
 				cursor: pointer;
+				white-space: nowrap;
 			}
 			iframe{
 				height: 384px;
 				border: 1px var(--theme-border-color) solid;
+				margin-bottom: 4px;
 			}
 		}
 	}
 	.topcap, .topdesc, .topdate{
-		height: auto;
 		position: fixed;
-		user-select: none;
 	}
 	.topcap{
-		top: 60%;
-		left: -8px;
+		top: 50%;
+		left: -4px;
 		text-align: center;
-		font: bold 48pt '游ゴシック';
-		color: var(--theme-sub-color);
+		height: 75px;
+		font: bold 56pt/75px '游ゴシック';
+		color: var(--theme-back-color);
 		text-shadow: 3px 2px black;
 		span{
 			font: 28pt '游明朝';
 		}
 	}
 	.topdesc{
-		top: 60%;
-		left: -8px;
-		text-align: center;
-		color: #FFF6;
-		font: bold 48pt '游ゴシック';
-		line-height: 50px;
+		height: auto;
+		top: calc(50% - 12px);
+		left: -4px;
+		display: flex;
+		justify-content: center;
+		div{
+			width: 1000px;
+			text-align: center;
+			color: #FFF3;
+			font: bold 48pt/52px '游ゴシック';
+			white-space: nowrap;
+			user-select: none;
+		}
 	}
 	.topdate{
 		display: table;
 		width: 96px;
 		height: 96px;
-		top: calc(60% + 112px);
+		top: calc(50% + 104px);
 		right: 24px;
-		background: var(--theme-sub-color);
+		background: var(--theme-back-color);
 		border-radius: 50%;
 		text-align: center;
+		transform: rotateZ(15deg);
+		box-shadow: 3px 2px black;
 		div {
 			display: table-cell;
 			vertical-align: middle;
@@ -237,14 +270,14 @@ h1{
 <body id="body">
 <div id="menuclose" class="close" onclick="this.classList.toggle('close')"></div>
 <div id="menu">
-	<div onclick="showTop()">TOP</div>
+	<div onclick="showTop()"><span>TOP</span></div>
 </div>
 <div id="main"></div>
 <script>
 const l = {
 	'2024/11/07(木)': [
 		{type: 'p', cap: '新千歳空港',
-			desc: '09:55 村松着\n10:05 木地、岡村、大橋着\n10:40 斉藤着',
+			desc: '09:55 村松着\n10:05 木地、岡村、大橋着\n10:40 斉藤着\n14:00 岩崎着',
 			img: 'https://imgur.com/CQT4ZPk.png',
 		},
 		{type: 'p', cap: '11:00 エビそば一幻',
@@ -259,15 +292,7 @@ const l = {
 		},
 		{type: 'm', from: '新千歳空港', to: 'Experience札幌'},
 		{type: 'p', cap: '14:00 宿',
-			desc: '岩さん以外チェックイン',
-			img: 'https://imgur.com/sMpfiJ6.png',
-		},
-		{type: 'p', cap: '14:00 新千歳空港',
-			desc: '岩崎着',
-			img: 'https://imgur.com/CQT4ZPk.png',
-		},
-		{type: 'p', cap: '15:30 宿',
-			desc: '岩さんチェックイン',
+			desc: '14:00 岩さん以外チェックイン\n15:30 岩さんチェックイン',
 			img: 'https://imgur.com/sMpfiJ6.png',
 		},
 		{type: 'm', from: 'Experience札幌', to: '藻岩山ロープウェイ'},
@@ -413,12 +438,13 @@ function showTop(){
 	body.classList.add('backsp');
 	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
 	const d1 = getElement('div', main, 'topdesc');
-	d1.textContent = 'HOKKAIDO\nSHINCHITOSE\nSAPPORO\nOTARU';
+	const d4 = getElement('div', d1)
+	d4.innerText = 'HOKKAIDO\nSHINCHITOSE\nSAPPORO\nOTARU';
 	const d0 = getElement('div', main, 'topcap');
 	d0.innerHTML = '1<span>日</span>5<span>食</span>2024<span>秋</span>';
 	const d2 = getElement('div', main, 'topdate');
 	const d3 = getElement('div', d2)
-	d3.innerText = '11/7(木) -\n11/10(日)';
+	d3.innerText = '11/7(木)-\n11/10(日)';
 }
 
 function showSchedule(d){
@@ -426,7 +452,7 @@ function showSchedule(d){
 	if(body.classList.contains('backsp')) body.classList.remove('backsp');
 	if(!(menuclose.classList.contains('close'))) menuclose.classList.add('close');
 	const d0 = getElement('h1', main);
-	d0.textContent = d;
+	d0.innerHTML = d.replace(/([^\(\)\/]+)/g, '<span>$1</span>');
 	l[d].forEach((e, i) => {
 		const d1 = getElement('div', main, e.type == 'm' ? 'move' : 'place');
 		if(e.type == 'm'){
@@ -436,7 +462,7 @@ function showSchedule(d){
 			d4.textContent = `${e.from} → ${e.to}(${e.dir == 'w' ? '徒歩' : e.dir == 'd' ? '車' : '公共'})▼`;
 			const ifr = getElement('iframe', d3, 'dispnone');
 			d4.onclick = () => ifr.classList.toggle('dispnone');
-			ifr.src = `https://www.google.com/maps?output=embed&saddr=${e.from}&daddr=${e.to}&dirflg=${e.dir ? e.dir : 'r'}`;
+			ifr.src = `https://www.google.com/maps?output=embed&saddr=${e.from}&daddr=${e.to}&dirflg=${e.dir ? e.dir : 'r'}&hl=ja`;
 		} else {
 			const d2 = getElement('div', d1, 'image');
 			const im = getElement('img', d2);
@@ -467,11 +493,16 @@ function getElement(e, p, c){
 window.onload = () => {
 	Object.keys(l).forEach(k => {
 		const d = getElement('div', menu);
-		d.textContent = k;
+		d.innerHTML = k.replace(/([^\(\)\/]+)/g, '<span>$1</span>');
 		d.onclick = () => showSchedule(k);
 	});
 
-	showTop();
+	const today = `${new Date().toLocaleDateString('sv').replace(/-/g, '/')}(${['日', '月', '火', '水', '木', '金', '土'][new Date().getDay()]})`;
+	if(today in l){
+		showSchedule(today);
+	} else {
+		showTop();
+	}
 }
 </script>
 </body>
