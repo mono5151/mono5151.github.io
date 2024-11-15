@@ -1,69 +1,165 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<title>calendar</title>
 <style>
+:root{
+	--theme-color: #222;
+}
 *{
+	width: 100%;
+	height: 100%;
+	box-sizing: border-box;
 	margin: 0;
 	padding: 0;
-	box-sizing: border-box;
-	width: 100%;
-	font-size: 12pt;
+	outline: 0;
+	border: 0 var(--theme-color) solid;
+	font: 14pt '游明朝';
+	color: var(--theme-color);
 }
-div, table{
-	margin: 16px;
-	width: calc(100% - 32px);
+body{
+	> div{
+		width: fit-content;
+		display: flex;
+		margin: 0 auto;
+		> div:first-child{
+			width: var(--date-height);
+			> div:nth-child(odd){
+				position: relative;
+				white-space: break-spaces;
+				text-align: center;
+				font: 18pt/22px '游明朝';
+				height: 0;
+				z-index: 5;
+				> span{
+					font-size: 14pt;
+				}
+			}
+			> div:nth-child(even){
+				transform: translateY(calc(var(--date-height) / 2 - 1px)) skewY(45deg);
+				border-width: 1px;
+				margin-bottom: -1px;
+			}
+			> div.horizonTop::before{
+				content: '';
+				display: block;
+				border-bottom: 1px var(--theme-color) solid;
+				position: relative;
+				transform: translateY(calc(var(--date-height) / 2)) skewY(-45deg);
+			}
+		}
+		> div:last-child{
+			height: auto;
+			display: flex;
+			width: calc(var(--date-width) * 7 + 1px);
+			flex-wrap: wrap;
+			> div{
+				border-width: 1px 1px 1px 0;
+				text-align: right;
+				width: var(--date-width);
+				height: var(--date-height);
+				margin-bottom: -1px;
+				padding: 0 4px;
+			}
+		}
+	}
 }
-div{
-	font-size: 16pt;
-	text-align: center;
-}
-table{
-	white-space: nowrap;
-	border-collapse: collapse;
-	table-layout: fixed;
-}
-th, td{
-	border: 1px black solid;
-	text-align: center;
-	padding: 8px;
-}
-.r{
-	text-align: right;
-}
+.m1 {background: #F0F8FF;}
+.m2 {background: #F8F8FF;}
+.m3 {background: #F8F0FF;}
+.m4 {background: #FFF0FF;}
+.m5 {background: #FFF0F8;}
+.m6 {background: #FFF8F8;}
+.m7 {background: #FFF8F0;}
+.m8 {background: #FFFFF0;}
+.m9 {background: #F8FFF0;}
+.m10{background: #F8FFF8;}
+.m11{background: #F0FFF8;}
+.m12{background: #F0FFFF;}
 </style>
 </head>
-<body id="b">
+<body>
+<div id="body"></div>
 <script>
-const getMonthWorkDays = (y, m) => [...Array(new Date(y, m, 0).getDate())].map((_, d) => d + 1).filter(d => ![0, 6].includes(new Date(y, m - 1, d).getDay()) && !l.includes(y * 10000 + m * 100 + d)).length
-const years = [...Array(3)].map((_, i) => (new Date).getFullYear() + i - 1);
-const url = 'https://api.national-holidays.jp/';
-const l = [];
+const dateWidth = 50;
+document.documentElement.style.setProperty('--date-width', `${dateWidth}px`);
+const dateHeight = 40;
+document.documentElement.style.setProperty('--date-height', `${dateHeight}px`);
 
 window.onload = async () => {
-	// APIより祝日一覧を取得
-	const promises = years.map(y => getHoliday(y));
-	await Promise.allSettled(promises);
-	// 年末年始休みを追加
-	years.forEach(y => [102, 103, 1229, 1230, 1231].forEach(i => l.push(y * 10000 + i)));
+	// 今日の日付取得
+	const t = new Date();
+	// 祝日取得
+	const holidays = new Set();
+	for(let y of [t.getFullYear(), t.getFullYear() + 1]){
+		(await (await fetch(`https://api.national-holidays.jp/${y}`)).json()).forEach(e => holidays.add(parseInt(e.date.replace(/-/g, ''))));
+		[102, 103, 1229, 1230, 1231].forEach(md => holidays.add(y * 10000 + md));
+	}
 
-	l.sort();
+	// 年月表示div
+	const mon = getElement('div', body, 'mon');
+	// カレンダー表示div
+	const dt = getElement('div', body);
 
-	console.log(l);
+	for(let j = 0; j < 13; j++){
+		// 年月・末日取得
+		const y = t.getFullYear();
+		const m = t.getMonth() + 1;
+		const d = new Date(y, m, 0).getDate();
+		// 初日の曜日取得
+		const f = new Date(y, m - 1, 1).getDay();
+		// 出勤日数カウント用
+		let w = 0;
 
-	let s = '<div>有給取得可能日数</div>';
-	s += '<table>';
-	s += '<tr><th style="width: 70px"> </th>' + years.map(y => `<th>${y}年</th>`).join('')  + '</tr>';
-	s += [...Array(12)].map((_, m) => m + 1).map(m => '<tr><th class="r">' + m + '月</th>' + years.map(y => getMonthWorkDays(y, m) - 18).map(d => `<td>${d}</td>`).join('') + '</tr>').join('');
-	s += '</table>';
-	b.innerHTML = s;
+		// カレンダーのマス目作成
+		[...Array(d)].forEach((_, i) => {
+			const dc = getElement('div', dt, `m${m}`);
+			// 日付出力
+			dc.textContent = i + 1;
+			// 最初の月の初日の曜日合わせの為、margin-left追加
+			if(!j && !i && f){
+				dc.style.width = `${dateWidth + 1}px`;
+				dc.style.marginLeft = `${f * dateWidth - 1}px`;
+				dc.style.borderLeftWidth = '1px';
+			}
+			// 土日祝に色付け
+			if(holidays.has(y * 10000 + m * 100 + i + 1)) dc.style.color = 'red';
+			else if((i + f) % 7 == 6) dc.style.color = 'blue';
+			else if((i + f) % 7 == 0) dc.style.color = 'red';
+			// 出勤日数カウントアップ
+			else w++;
+		});
+
+		// 「yy年mm月(w)」表示div
+		const ym = getElement('div', mon);
+		// 背景色div
+		const dm = getElement('div', mon, `m${m}`);
+		// 高さの計算
+		dm.style.height = `${(dateHeight - 1) * Math.ceil((d - (7 - f) % 7) / 7) + (j == 12 || !j && !f ? 1 : 0) + 1}px`;
+		// 最初の月が日曜日始まりなら水平線を追加
+		if(!j && !f){
+			dm.classList.add('horizonTop');
+			dm.style.marginTop = `-${dateHeight}px`;
+		}
+		dm.style.zIndex = -j * 10;
+		// 文字表示部分の作成
+		ym.style.top = `${parseInt(dm.style.height) / 2 - 22 * 1.7 - (!j && !f ? dateHeight - 5 : 0)}px`;
+		ym.textContent = `${y % 100}\n年\n${m}\n月\n`;
+		// 出勤日数表示の作成
+		getElement('span', ym).textContent = `(${w})`;
+
+		// 次月へ
+		t.setMonth(t.getMonth() + 1);
+	}
 }
 
-async function getHoliday(y){
-	const d = await fetch(url + y);
-	const j = await d.json();
-	j.forEach(i => l.push(parseInt(i.date.replace(/-/g, ''))));
+function getElement(e, p, c){
+	const el = document.createElement(e);
+	if(c) el.classList.add(c);
+	p.append(el);
+	return el;
 }
 </script>
 </body>
