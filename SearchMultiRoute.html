@@ -1,80 +1,84 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<title>25地点経路検索</title>
 <style>
 *{
 	margin: 0;
 	padding: 0;
-	box-sizing: border-box;
+	border: 0 #222 solid;
+	border-radius: 3px;
+	outline: 0;
 	width: 100%;
-	font-size: 12pt;
+	height: 100%;
+	font: 12pt/var(--line-height) 'Yu Gothic';
+	color: #222;
+	box-sizing: border-box;
 }
-input{
-	padding: 4px;
-}
-iframe{
-	border: none;
-}
-#b{
-	height: 200px;
-	display: flex;
-	font-size: 0;
-	> div{
-		width: calc(100% - 200px);
-		height: 100%;
-		input, select{
-			height: 30px;
-			border: 1px gray solid;
-			border-width: 1px 0 0;
-		}
-		textarea{
-			resize: none;
-			height: calc(100% - 60px);
-			padding: 4px;
-			border: 1px gray solid;
-			border-width: 1px 0;
+body{
+	font: 0/0 '';
+	div{
+		height: 30px;
+		padding-left: 8px;
+		display: flex;
+		white-space: nowrap;
+		line-height: 30px;
+		select{
+			border-width: 1px;
 		}
 	}
-	> iframe{
-		width: 200px;
-		height: 100%;
+	textarea{
+		height: var(--textarea-height);
+		border-width: 1px;
+		resize: none;
+		padding: 4px 2px;
+		white-space: nowrap;
+		overflow: hidden;
+	}
+	iframe{
+		height: calc(100% - var(--textarea-height) - 30px);
 	}
 }
-#l > div{
-	height: 200px;
-	> div{
-		height: 20px;
-	}
-	> iframe{
-		height: calc(100% - 20px);
-	}
-}
+
 </style>
 </head>
 <body>
-<div id="b">
-	<div>
-		<input id="f" onchange="c()" value="現在地">
-		<select id="s" onchange="ad()">
-			<option value="r">公共交通機関</option>
-			<option value="d">車</option>
-			<option value="w">徒歩</option>
-			<option value="b">自転車</option>
-		</select>
-		<textarea id="t" onchange="ad()"></textarea>
-	</div>
-	<iframe id="m" tabindex=-1></iframe>
+<div>
+	移動手段：
+	<select id="ddlDir" onchange="setSrc()">
+		<option value=0>車</option>
+		<option value=1>自転車</option>
+		<option value=2 selected>徒歩</option>
+		<!--<option value=3>公共機関</option>-->
+	</select>
 </div>
-<div id="l"></div>
-<!-- "https://www.google.com/maps?output=embed&saddr=出発地&daddr=目的地" -->
-<!-- "&dirflg = d[車] | r[公共交通機関] | w[徒歩] | b[自転車]" -->
+<textarea id="txtIn" onchange="setSrc()" oninput="resizeTextarea()"></textarea>
+<iframe id="iMap"></iframe>
 <script>
-const c = () => m.src = `https://www.google.com/maps?output=embed&saddr=${f.value}&daddr=${f.value}`;
-const ad = () => l.innerHTML = t.value.split('\n').filter(e => e.length).map(e => `<div><div> ⇒ ${e}</div><iframe tabindex=-1 src="https://www.google.com/maps?output=embed&saddr=${f.value}&daddr=${e}&dirflg=${s.value}"></iframe></div>`).join('');
-c();
-t.focus();
+const lineHeight = 16;
+document.documentElement.style.setProperty('--line-height', `${lineHeight}px`);
+
+window.onload = resizeTextarea;
+
+function setSrc(){
+	let l = txtIn.value.split(/\r?\n|,|\t/).filter(i => i.length);
+
+	if(l.length <= 1) iMap.src = '';
+	else iMap.src = `https://www.google.com/maps?output=embed&saddr=${l.shift().trim()}&daddr=${l.map(i => i.trim()).join('+to:')}&dirflg=${'dbwr'[ddlDir.value]}`;
+//	iMap.src = `https://www.google.com/maps/embed?pb=!1m${l.length * 2 + 2}!4m${l.length * 2 + 1}!3e2${l.map(i => `!4m1!2s${i.trim()}`).join('')}!5e0!4v1731981892279!5m2!1sja!2sjp`;
+}
+
+function resizeTextarea(){
+	const itemCount = txtIn.value.split(/\r?\n|,|\t/).length;
+	if(itemCount > 25){
+		const startIndex = txtIn.selectionStart;
+		txtIn.value = txtIn.value.split(/((?:\r?\n)|(?:,)|(?:\t))/).slice(0, 49).join('');
+		txtIn.selectionEnd = txtIn.selectionStart = startIndex;
+	}
+	document.documentElement.style.setProperty('--textarea-height', `${txtIn.value.split(/\n/).length * lineHeight + 10}px`);
+}
 </script>
 </body>
 </html>
