@@ -1,42 +1,205 @@
-<!DOCUTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-	<title>ＰＤＦ表示</title>
+	<title>色あて</title>
 <style>
 *{
 	margin: 0;
 	padding: 0;
-	box-sizing: border-box;
+	border: 0 #333 solid;
+	border-radius: 3px;
+	outline: 0;
 	width: 100%;
-}
-button, input{
-	font-size: 16pt;
-}
-embed{
-	border: none;
 	height: 100%;
+	font: 12pt/30px 'Yu Gothic';
+	color: #222;
+	box-sizing: border-box;
+}
+body{
+	padding: 8px;
+	font: 0/0 '';
+	> *{
+		width: 250px;
+		margin: 0 auto;
+	}
+	> div:first-child{
+		position: relative;
+		height: 30px;
+		text-align: center;
+		> input, > button{
+			position: absolute;
+			width: 80px;
+		}
+		> input{
+			left: 0;
+			padding: 0 2px;
+			border-width: 1px;
+			margin-right: 10px;
+		}
+		> button{
+			right: 0;
+			display: none;
+		}
+		> button.showAnswer{
+			display: block;
+		}
+	}
+	> button{
+		position: relative;
+		display: block;
+		height: 40px;
+		margin-top: 4px;
+		> div{
+			position: absolute;
+			top: 9px;
+			left: 9px;
+			width: 20px;
+			height: 20px;
+			border-width: 1px;
+			display: none;
+		}
+		&.showAnswer > div{
+			display: block;
+		}
+	}
+}
+button{
+	background: whitesmoke;
+	border-width: 1px;
+	&:hover{
+		background: silver;
+	}
+}
+.result{
+	width: 100%;
+	height: fit-content;
+	position: absolute;
+	top: 40px;
+	z-index: 10;
+	text-align: center;
+	display: none;
+	div{
+		display: inline-block;
+		width: 200px;
+		height: 200px;
+	}
+}
+.showSuccess, .showFailure{
+	display: block;
+	animation: 1s ans ease-in both;
+	p{
+		font: bold 40px 'Yu Gothic';
+		white-space: nowrap;
+	}
+}
+.showSuccess{
+	div{
+		border: 8px red solid;
+		border-radius: 50%;
+	}
+	p{
+		color: red;
+	}
+}
+.showFailure{
+	div{
+		position: relative;
+		&::before, &::after{
+			content: '';
+			display: block;
+			position: absolute;
+			top: -41px;
+			width: 0;
+			height: 282px;
+			border-left: 8px blue solid;
+			left: calc(50% - 4px);
+		}
+		&::before{
+			transform: rotate(45deg);
+		}
+		&::after{
+			transform: rotate(-45deg);
+		}
+	}
+	p{
+		color: blue;
+	}
+}
+@keyframes ans{
+	from{opacity: 1}
+	to  {opacity: 0}
 }
 </style>
 </head>
-<body id="b">
-<button onclick="c()" id="bc">クリップボードのPDFのURLを開く</button>
-<iframe src="https://drive.google.com/file/d/1D-Adh2IKVWWBDwqlC8_3yGHtWFs555G4/view?usp=sharingc">
-</iframe>
+<body>
+<div>
+	<button id="nx" onclick="getQuiz()">Next</button>
+	<input type="color" id="clr" disabled>何色？
+</div>
+<button id="b1" onclick="ans(this)"></button>
+<button id="b2" onclick="ans(this)"></button>
+<button id="b3" onclick="ans(this)"></button>
+<button id="b4" onclick="ans(this)"></button>
+<div id="result" class="result"><div></div><p id="msg"></p></div>
 <script>
-async function c(){
-	try{
-		const u = String(await navigator.clipboard.readText()).replace(/"/g, '');
-		if(u.slice(-4).toLowerCase() === '.pdf'){
-			b.innerHTML = `<embed src="https://docs.google.com/gview?url=${u}&embedded=true"></embed>`;
-		} else {
-			alert('PDFのURLがコピーされていません。\n' + u);
-		}
-	} catch(error) {
-		alert(error);
+const colors = ['aliceblue', 'antiquewhite', 'aqua', 'aquamarine', 'azure', 'beige', 'bisque', 'black', 'blanchedalmond', 'blue', 'blueviolet', 'brown', 'burlywood', 'cadetblue', 'chartreuse', 'chocolate', 'coral', 'cornflowerblue', 'cornsilk', 'crimson', 'darkblue', 'darkcyan', 'darkgoldenrod', 'darkgray', 'darkgreen', 'darkkhaki', 'darkmagenta', 'darkolivegreen', 'darkorange', 'darkorchid', 'darkred', 'darksalmon', 'darkseagreen', 'darkslateblue', 'darkslategray', 'darkturquoise', 'darkviolet', 'deeppink', 'deepskyblue', 'dimgray', 'dodgerblue', 'firebrick', 'floralwhite', 'forestgreen', 'fuchsia', 'gainsboro', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'greenyellow', 'honeydew', 'hotpink', 'indianred', 'indigo', 'ivory', 'khaki', 'lavender', 'lavenderblush', 'lawngreen', 'lemonchiffon', 'lightblue', 'lightcoral', 'lightcyan', 'lightgoldenrodyellow', 'lightgray', 'lightgreen', 'lightpink', 'lightsalmon', 'lightseagreen', 'lightskyblue', 'lightslategray', 'lightsteelblue', 'lightyellow', 'lime', 'limegreen', 'linen', 'maroon', 'mediumaquamarine', 'mediumblue', 'mediumorchid', 'mediumpurple', 'mediumseagreen', 'mediumslateblue', 'mediumspringgreen', 'mediumturquoise', 'mediumvioletred', 'midnightblue', 'mintcream', 'mistyrose', 'moccasin', 'navajowhite', 'navy', 'oldlace', 'olive', 'olivedrab', 'orange', 'orangered', 'orchid', 'palegoldenrod', 'palegreen', 'paleturquoise', 'palevioletred', 'papayawhip', 'peachpuff', 'peru', 'pink', 'plum', 'powderblue', 'purple', 'rebeccapurple', 'red', 'rosybrown', 'royalblue', 'saddlebrown', 'salmon', 'sandybrown', 'seagreen', 'seashell', 'sienna', 'silver', 'skyblue', 'slateblue', 'slategray', 'snow', 'springgreen', 'steelblue', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'wheat', 'white', 'whitesmoke', 'yellow', 'yellowgreen', ];
+const successWord = ['正解', '正解です', 'すごい', 'さすが', '天才', '英才', '秀才', '物知り', '博識', '博学', '知識人', '賢者', '知識豊富', 'インテリ', '学識者', '歩く知恵袋', 'Success', 'おめでとう', 'Congratulations', '英傑', '素敵', 'お見事', '立派', '天晴れ', ];
+let answer = b1;
+
+function getQuiz(){
+	const wColors = [...colors];
+	const wButtons = [b1, b2, b3, b4];
+	while(wButtons.length){
+		const b = getListRandom(wButtons);
+		b.classList.remove('showAnswer');
+		b.style.background = null;
+		b.textContent = '';
+		const dv = document.createElement('div');
+		dv.style.background = getListRandom(wColors);
+		b.append(dv);
+		b.append(dv.style.background);
+		clr.value = getRgb(dv.style.background);
+		answer = b;
 	}
+	nx.classList.remove('showAnswer');
+	result.classList = 'result';
 }
+
+function getListRandom(l){
+	return l.splice(Math.floor(Math.random() * l.length), 1)[0];
+}
+
+function ans(b){
+	if(!answer) return;
+
+	b.style.background = 'pink';
+	answer.style.background = 'PaleTurquoise';
+	msg.textContent = b == answer ? getListRandom(successWord) + '!!' : '不正解...';
+	restartAnime(b == answer ? 'showSuccess' : 'showFailure');
+	answer = null;
+	[b1, b2, b3, b4].forEach(i => i.classList.add('showAnswer'));
+	nx.classList.add('showAnswer');
+}
+
+function getRgb(name){
+	const context = document.createElement('canvas').getContext('2d');
+	context.fillStyle = name;
+	context.fillRect(0, 0, 1, 1);
+	const px = context.getImageData(0, 0, 1, 1).data;
+	return `#${toHex(px[0])}${toHex(px[1])}${toHex(px[2])}`;
+}
+
+function toHex(d){
+	return d.toString(16).padStart(2, '0');
+}
+
+function restartAnime(c){
+	window.requestAnimationFrame(() => result.classList.add(c));
+};
+
+window.onload = getQuiz;
 </script>
 </body>
 </html>
