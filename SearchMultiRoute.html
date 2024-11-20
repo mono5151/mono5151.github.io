@@ -66,8 +66,8 @@ function setSrc(){
 	let l = txtIn.value.split(/\r?\n|,|\t/).filter(i => i.length);
 
 	if(l.length <= 1) iMap.src = '';
-	else iMap.src = `https://www.google.com/maps?output=embed&saddr=${l.shift().trim()}&daddr=${l.map(i => i.trim()).join('+to:')}&dirflg=${'dbwr'[ddlDir.value]}`;
-//	iMap.src = `https://www.google.com/maps/embed?pb=!1m${l.length * 2 + 2}!4m${l.length * 2 + 1}!3e2${l.map(i => `!4m1!2s${i.trim()}`).join('')}!5e0!4v1731981892279!5m2!1sja!2sjp`;
+	else iMap.src = `https://www.google.com/maps/embed?pb=!1m${l.length * 2 + 2}!4m${l.length * 2 + 1}!3e2${l.map(i => `!4m1!2s${i.trim()}`).join('')}!5e0!4v1731981892279!5m2!1sja!2sjp`;
+//	else iMap.src = `https://www.google.com/maps?output=embed&saddr=${l.shift().trim()}&daddr=${l.map(i => i.trim()).join('+to:')}&dirflg=${'dbwr'[ddlDir.value]}`;
 }
 
 function resizeTextarea(){
