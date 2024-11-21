@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+	<title>テキスト修正</title>
+<style>
+*{
+	margin: 0;
+	padding: 0;
+	border: 0 #333 solid;
+	border-radius: 3px;
+	outline: 0;
+	width: 100%;
+	height: 100%;
+	font: 12pt/20px 'MS Gothic';
+	color: #222;
+	box-sizing: border-box;
+}
+body{
+	font: 0/0 '';
+	div{
+		display: flex;
+		height: 30px;
+		input{
+			display: none;
+		}
+		button{
+			border-width: 1px;
+		}
+	}
+	textarea{
+		height: calc(100% - 30px);
+		padding: 2px 4px;
+		border-width: 1px;
+		resize: none;
+		overflow: hidden auto;
+		white-space: nowrap;
+	}
+}
+</style>
+</head>
+<body>
+<textarea id="note"></textarea>
+<div>
+	<input type="file" id="inputFile" >
+	<button id="btnOpen">Open</button>
+	<button id="btnSave">Save</button>
+</div>
+<script>
+window.onload = () =>{
+	btnOpen.onclick = () => inputFile.click();
+
+	btnSave.onclick = async () => {
+		let fp = null;
+		try{
+			fp = await window.showSaveFilePicker();
+		} catch {
+			return;
+		}
+		if(!fp) return;
+		const ws = await fp.createWritable();
+		await ws.write(note.value);
+		await ws.close();
+	}
+
+	inputFile.onchange = e => {
+		const fr = new FileReader();
+		fr.onload = e => note.value = e.target.result;
+		fr.readAsText(e.target.files[0]);
+	}
+}
+</script>
+</body>
+</html>
