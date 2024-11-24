@@ -61,7 +61,7 @@ img.onload = async () => {
 	try{
 		const json = await (await fetch('https://api.imgur.com/3/image', {
 			method: 'POST',
-			headers: { 'Authorization': '${{ secrets.IMGUR_API_KEY }}' },
+			headers: { 'Authorization': '${{ process.env.API_KEY }}' },
 			body: formData,
 		})).json();
 		if(json.success){
