@@ -43,33 +43,49 @@ body{
 <body>
 <textarea id="note"></textarea>
 <div>
-	<input type="file" id="inputFile" >
 	<button id="btnOpen">Open</button>
 	<button id="btnSave">Save</button>
 </div>
-<script>
-window.onload = () =>{
-	btnOpen.onclick = () => inputFile.click();
+<script type="module">
+	import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
+	import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js';
 
-	btnSave.onclick = async () => {
-		let fp = null;
-		try{
-			fp = await window.showSaveFilePicker();
-		} catch {
-			return;
+	const firebaseConfig = {
+		apiKey: "AIzaSyBaFCqdBRzbkkfIj40-ncZx-1FssZLhn0c",
+		authDomain: "itinerary515.firebaseapp.com",
+		projectId: "itinerary515",
+		storageBucket: "itinerary515.firebasestorage.app",
+		messagingSenderId: "658128265200",
+		appId: "1:658128265200:web:3fe79116d823fb9a830735",
+		databaseURL: "https://itinerary515-default-rtdb.firebaseio.com/",
+	};
+
+	// Firebaseの初期化
+	const app = initializeApp(firebaseConfig);
+	const db = getDatabase(app);
+
+	// データの書き込み
+	function writeUserData(userId, name, email) {
+		set(ref(db, 'users/' + userId), {
+			username: name,
+			email: email,
+		});
+	}
+
+	// データの読み取り（一回のみ）
+	async function readUserData(userId) {
+		const snapshot = await get(ref(db, 'users/' + userId));
+		if (snapshot.exists()) {
+			console.log(snapshot.val());
+		} else {
+			console.log("No data available");
 		}
-		if(!fp) return;
-		const ws = await fp.createWritable();
-		await ws.write(note.value);
-		await ws.close();
 	}
 
-	inputFile.onchange = e => {
-		const fr = new FileReader();
-		fr.onload = e => note.value = e.target.result;
-		fr.readAsText(e.target.files[0]);
-	}
-}
+	// 関数の呼び出し
+	writeUserData("user1", "John Doe", "john@example.com");
+	readUserData("user1");
+
 </script>
 </body>
 </html>
