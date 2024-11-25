@@ -42,8 +42,8 @@ body{
 const img = new Image();
 img.onload = async () => {
 	const canvas = document.createElement('canvas');
-	canvas.width = 150;
-	canvas.height = 100;
+	canvas.width = 148;
+	canvas.height = 98;
 
 	const scale = Math.max(canvas.width / img.width, canvas.height / img.height);
 	const drawWidth = img.width * scale;
