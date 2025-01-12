@@ -94,7 +94,7 @@ window.onload = async () => {
 	// 祝日取得
 	const holidays = new Set();
 	for(let y of [t.getFullYear(), t.getFullYear() + 1]){
-		(await (await fetch(`https://api.national-holidays.jp/${y}`)).json()).forEach(e => holidays.add(parseInt(e.date.replace(/-/g, ''))));
+		Object.keys(await (await fetch(`https://holidays-jp.github.io/api/v1/${y}/date.json`)).json()).forEach(d => holidays.add(Number(d.replace(/-/g, ''))));
 		[102, 103, 1229, 1230, 1231].forEach(md => holidays.add(y * 10000 + md));
 	}
 
