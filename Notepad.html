@@ -12,18 +12,26 @@ html, body{
   padding: 0;
   font-size: 0;
 }
-body *{
-	font-size: 12pt;
-	font-family: "游ゴシック", "Yu Gothic", "ヒラギノ角ゴ ProN", "Meiryo", "MS Gothic", sans-serif;
-	padding: 0;
-	margin: 0;
-	box-sizing: border-box;
-	width: 100%;
-	height: 100%;
-	border: 0 solid dimgray;
-	outline: 0;
-	color: black;
-	user-select: none;
+body{
+		*{
+		font-size: 12pt;
+		font-family: "游ゴシック", "Yu Gothic", "ヒラギノ角ゴ ProN", "Meiryo", "MS Gothic", sans-serif;
+		padding: 0;
+		margin: 0;
+		box-sizing: border-box;
+		width: 100%;
+		height: 100%;
+		border: 0 solid dimgray;
+		outline: 0;
+		color: black;
+		user-select: none;
+		
+	}
+	@media screen and (max-width: 767px) {
+    *{
+			font-size: 9pt;
+		}
+	}
 }
 body{
 	background: white;
@@ -79,6 +87,11 @@ body{
 				}
 			}
 		}
+		@media screen and (max-width: 767px) {
+			#grid{
+				grid-template: 30px / 30px;
+			}
+		}
 	}
 }
 </style>
@@ -106,25 +119,25 @@ const addElement = (tag, parent, cls) => {
 
 const events = {
 	'1月18日（土）': [
-		{ s: '07:00', e: '08:00', t: '朝飯：老酒舗', m: ['村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '08:00', e: '10:00', t: '秋葉原観光', m: ['村松', '大橋', '斉藤', '木地'], c: 'aliceblue', x: { padding: '0 75% 0 25%' } },
-		{ s: '08:30', e: '11:00', t: '映画ガンダム', m: ['斉藤', '木地'], c: 'aliceblue', z: 2 },
+		{ s: '07:00', e: '08:00', t: '朝飯：老酒舗', m: ['村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
+		{ s: '08:00', e: '10:00', t: '秋葉原観光', m: ['村松', '大橋', '斉藤', '木地'], c: 'lightcyan', x: { padding: '0 75% 0 25%' } },
+		{ s: '08:30', e: '11:00', t: '映画ガンダム', m: ['斉藤', '木地'], c: 'lavender', z: 2 },
 		{ s: '10:00', e: '12:00', t: '浅草観光', m: ['村松', '大橋'], c: 'aliceblue' },
-		{ s: '11:00', e: '12:30', t: '昼飯', m: ['斉藤', '木地'], c: 'aliceblue' },
-		{ s: '12:30', e: '13:30', t: 'ゴミうんち展／企画展「卵・玉子・たまご」', m: ['村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '14:30', e: '16:00', t: 'ゆるキャン△展／きぐリン', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '16:50', e: '18:10', t: 'もちづきさん\nコラボカフェ', m: ['村松'], c: 'aliceblue', z: 2 },
-		{ s: '17:00', e: '18:00', t: '晩飯：フレスカ', m: ['岡村', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '18:10', e: '21:00', t: '酒盛り：木花之醸造所／不純喫茶ドープ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '11:00', e: '12:30', t: '昼飯', m: ['斉藤', '木地'], c: 'lavender' },
+		{ s: '12:30', e: '13:30', t: 'ゴミうんち展／企画展「卵・玉子・たまご」', m: ['村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
+		{ s: '14:30', e: '16:00', t: 'ゆるキャン△展／きぐリン', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'seashell' },
+		{ s: '16:50', e: '18:10', t: 'もちづきさん\nコラボカフェ', m: ['村松'], c: 'honeydew', z: 2 },
+		{ s: '17:00', e: '18:00', t: '晩飯：フレスカ', m: ['岡村', '大橋', '斉藤', '木地'], c: 'seashell', x: { padding: '0 40% 0 60%' } },
+		{ s: '18:10', e: '21:00', t: '酒盛り：木花之醸造所／不純喫茶ドープ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'seashell' },
 	],
 	'1月19日（日）': [
 		{ s: '09:30', e: '10:30', t: 'ポケモン×工芸展', m: ['岡村', '村松', '大橋', '斉藤'], c: 'aliceblue' },
-		{ s: '12:00', e: '13:00', t: '昼飯：ハングリータイガー', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '13:30', e: '14:30', t: 'スヌーピーミュージアム', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '14:30', e: '15:30', t: 'ピーナッツカフェ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
-		{ s: '17:00', e: '18:00', t: '奥野ビル', m: ['岡村', '村松', '大橋', '木地'], c: 'aliceblue' },
-		{ s: '17:00', e: '19:00', t: '帰りの新幹線', m: ['斉藤'], c: 'aliceblue', z: 2 },
-		{ s: '18:00', e: '19:00', t: '晩飯：名代 富士そば', m: ['岡村', '村松', '大橋', '木地'], c: 'aliceblue' },
+		{ s: '12:00', e: '13:00', t: '昼飯：ハングリータイガー', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
+		{ s: '13:30', e: '14:30', t: 'スヌーピーミュージアム', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
+		{ s: '14:30', e: '15:30', t: 'ピーナッツカフェ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
+		{ s: '17:00', e: '19:00', t: '帰りの新幹線', m: ['斉藤'], c: 'seashell', z: 2 },
+		{ s: '17:00', e: '18:00', t: '奥野ビル', m: ['岡村', '村松', '大橋', '木地'], c: 'lightcyan', x: { padding: '0 60% 0 40%' } },
+		{ s: '18:00', e: '19:00', t: '晩飯：名代 富士そば', m: ['岡村', '村松', '大橋', '木地'], c: 'lightcyan', x: { padding: '0 60% 0 40%' } },
 	],
 };
 
@@ -178,7 +191,7 @@ function showSchedule(){
 		el.style.gridArea = `${sRow} / ${sCol} / ${eRow} / ${eCol}`;
 		if(e.z) el.style.zIndex = e.z;
 		el = addElement('div', el);
-		el.textContent = `${e.s} - ${e.e}\n${e.t}`;
+		el.textContent = `${e.s}-${e.e}\n${e.t}`;
 		el.style.backgroundColor = e.c;
 		if(e.x) Object.entries(e.x).forEach(([k, v]) => el.style[k] = v);
 	});
