@@ -1,91 +1,188 @@
-<!DOCTYPE html>
+<!DOCUTYPE html>
 <html lang="ja">
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-	<title>メモ帳</title>
+	<title>スケジュール</title>
 <style>
-*{
-	margin: 0;
+html, body{
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  font-size: 0;
+}
+body *{
+	font-size: 12pt;
+	font-family: "游ゴシック", "Yu Gothic", "ヒラギノ角ゴ ProN", "Meiryo", "MS Gothic", sans-serif;
 	padding: 0;
-	border: 0 #333 solid;
-	border-radius: 3px;
-	outline: 0;
+	margin: 0;
+	box-sizing: border-box;
 	width: 100%;
 	height: 100%;
-	font: 12pt/20px 'MS Gothic';
-	color: #222;
-	box-sizing: border-box;
+	border: 0 solid dimgray;
+	outline: 0;
+	color: black;
+	user-select: none;
 }
 body{
-	font: 0/0 '';
-	div{
+	background: white;
+	.container{
 		display: flex;
-		height: 30px;
-		input{
-			display: none;
+		flex-direction: column;
+		.container-header{
+			flex: 0 0 30px;
+			select, select option{
+				font-size: 16pt;
+				font-weight: bold;
+				padding: 2px 8px;
+			}
 		}
-		button{
-			border-width: 1px;
+		#grid{
+			display: grid;
+			grid-template: 50px / 80px;
+			grid-auto-rows: 1fr;
+			grid-auto-columns: 1fr;
+			border: 2px solid silver;
+			padding: 2px;
+			gap: 2px;
+			.grid-line{
+				z-index: -1;
+			}
+			.member{
+				background-color: silver;
+				color: white;
+				text-shadow: 1px 1px black;
+				font-weight: bold;
+			}
+			.time{
+				text-shadow: 1px 1px white;
+			}
+			.center-middle{
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+			.event{
+				padding: 0 8px;
+				> div{
+					border-width: 1px;
+					border-radius: 3px;
+					display: flex;
+					justify-content: center;
+					align-items: center;
+					text-align: center;
+					text-shadow: 1px 1px white;
+					overflow: hidden;
+					white-space: pre;
+					line-height: 17px;
+				}
+			}
 		}
-	}
-	textarea{
-		height: calc(100% - 30px);
-		padding: 2px 4px;
-		border-width: 1px;
-		resize: none;
-		overflow: hidden auto;
-		white-space: nowrap;
 	}
 }
 </style>
 </head>
 <body>
-<textarea id="note"></textarea>
-<div>
-	<button id="btnOpen">Open</button>
-	<button id="btnSave">Save</button>
+<div class="container">
+	<div class="container-header">
+		<select
+			id="date"
+			oninput="showSchedule()"
+		>
+		</select>
+	</div>
+	<div id="grid"></div>
 </div>
-<script type="module">
-	import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-app.js";
-	import { getDatabase, ref, set, get, onValue } from 'https://www.gstatic.com/firebasejs/11.0.2/firebase-database.js';
+<script>
+const members = ['岡村', '村松', '大橋', '斉藤', '木地'];
 
-	const firebaseConfig = {
-		apiKey: "AIzaSyBaFCqdBRzbkkfIj40-ncZx-1FssZLhn0c",
-		authDomain: "itinerary515.firebaseapp.com",
-		projectId: "itinerary515",
-		storageBucket: "itinerary515.firebasestorage.app",
-		messagingSenderId: "658128265200",
-		appId: "1:658128265200:web:3fe79116d823fb9a830735",
-		databaseURL: "https://itinerary515-default-rtdb.firebaseio.com/",
-	};
+const addElement = (tag, parent, cls) => {
+	const el = document.createElement(tag);
+	if(parent) parent.append(el);
+	if(cls) el.classList.add(...[cls].flat());
+	return el;
+}
 
-	// Firebaseの初期化
-	const app = initializeApp(firebaseConfig);
-	const db = getDatabase(app);
+const events = {
+	'1月18日（土）': [
+		{ s: '07:00', e: '08:00', t: '朝飯：老酒舗', m: ['村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '08:00', e: '10:00', t: '秋葉原観光', m: ['村松', '大橋', '斉藤', '木地'], c: 'aliceblue', x: { padding: '0 75% 0 25%' } },
+		{ s: '08:30', e: '11:00', t: '映画ガンダム', m: ['斉藤', '木地'], c: 'aliceblue', z: 2 },
+		{ s: '10:00', e: '12:00', t: '浅草観光', m: ['村松', '大橋'], c: 'aliceblue' },
+		{ s: '11:00', e: '12:30', t: '昼飯', m: ['斉藤', '木地'], c: 'aliceblue' },
+		{ s: '12:30', e: '13:30', t: 'ゴミうんち展／企画展「卵・玉子・たまご」', m: ['村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '14:30', e: '16:00', t: 'ゆるキャン△展／きぐリン', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '16:50', e: '18:10', t: 'もちづきさん\nコラボカフェ', m: ['村松'], c: 'aliceblue', z: 2 },
+		{ s: '17:00', e: '18:00', t: '晩飯：フレスカ', m: ['岡村', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '18:10', e: '21:00', t: '酒盛り：木花之醸造所／不純喫茶ドープ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+	],
+	'1月19日（日）': [
+		{ s: '09:30', e: '10:30', t: 'ポケモン×工芸展', m: ['岡村', '村松', '大橋', '斉藤'], c: 'aliceblue' },
+		{ s: '12:00', e: '13:00', t: '昼飯：ハングリータイガー', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '13:30', e: '14:30', t: 'スヌーピーミュージアム', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '14:30', e: '15:30', t: 'ピーナッツカフェ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'aliceblue' },
+		{ s: '17:00', e: '18:00', t: '奥野ビル', m: ['岡村', '村松', '大橋', '木地'], c: 'aliceblue' },
+		{ s: '17:00', e: '19:00', t: '帰りの新幹線', m: ['斉藤'], c: 'aliceblue', z: 2 },
+		{ s: '18:00', e: '19:00', t: '晩飯：名代 富士そば', m: ['岡村', '村松', '大橋', '木地'], c: 'aliceblue' },
+	],
+};
 
-	// データの書き込み
-	function writeUserData(userId, name, email) {
-		set(ref(db, 'users/' + userId), {
-			username: name,
-			email: email,
+window.onload = () => {
+	Object.keys(events).forEach(e => {
+		const el = addElement('option', date);
+		el.textContent = el.value = e;
+	});
+
+	showSchedule();
+}
+
+function showSchedule(){
+	const getColorByHour = i => {
+		if(i < 12) return 'bisque';
+		if(i < 18) return 'pink';
+		return 'lavender';
+	}
+	const timeToNumber = t => {
+		const ary = t.split(':');
+		return 12 * (Number(ary[0]) - 6) + Number(ary[1]) / 5 + 2;
+	}
+
+	while(grid.firstChild) grid.firstChild.remove();
+	let el = addElement('div', grid, ['grid-line', 'center-middle', 'member']);
+	el.textContent = '名前';
+	el.style.gridArea = '1 / 1 / span 1 / span 1';
+	[...Array(18)].forEach((_, i) => {
+		el = addElement('div', grid, ['grid-line', 'time', 'center-middle']);
+		el.textContent = `${String(i + 6).padStart(2, '0')}:00`;
+		el.style.gridArea = `${i * 12 + 2} / 1 / span 12 / span 1`;
+		el.style.backgroundColor = getColorByHour(i + 6);
+	});
+	members.forEach((member, c) => {
+		el = addElement('div', grid, ['grid-line', 'center-middle', 'member']);
+		el.textContent = member;
+		el.style.gridArea = `1 / ${c + 2} / span 1 / span 1`;
+		[...Array(18)].forEach((_, i) => {
+			el = addElement('div', grid, ['grid-line']);
+			el.style.gridArea = `${i * 12 + 2} / ${c + 2} / span 12 / span 1`;
+		el.style.backgroundColor = getColorByHour(i + 6);
 		});
-	}
-
-	// データの読み取り（一回のみ）
-	async function readUserData(userId) {
-		const snapshot = await get(ref(db, 'users/' + userId));
-		if (snapshot.exists()) {
-			console.log(snapshot.val());
-		} else {
-			console.log("No data available");
-		}
-	}
-
-	// 関数の呼び出し
-	writeUserData("user1", "John Doe", "john@example.com");
-	readUserData("user1");
-
+	});
+	events[date.value].forEach(e => {
+		el = addElement('div', grid, ['event']);
+		const sRow = timeToNumber(e.s);
+		const eRow = timeToNumber(e.e);
+		const cols = e.m.map(m => members.indexOf(m) + 2);
+		const sCol = Math.min(...cols);
+		const eCol = Math.max(...cols) + 1;
+		el.style.gridArea = `${sRow} / ${sCol} / ${eRow} / ${eCol}`;
+		if(e.z) el.style.zIndex = e.z;
+		el = addElement('div', el);
+		el.textContent = `${e.s} - ${e.e}\n${e.t}`;
+		el.style.backgroundColor = e.c;
+		if(e.x) Object.entries(e.x).forEach(([k, v]) => el.style[k] = v);
+	});
+}
 </script>
 </body>
-</html>
+</html>　
