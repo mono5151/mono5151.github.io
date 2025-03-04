@@ -13,7 +13,7 @@ html, body{
   font-size: 0;
 }
 body{
-		*{
+	*{
 		font-size: 12pt;
 		font-family: "游ゴシック", "Yu Gothic", "ヒラギノ角ゴ ProN", "Meiryo", "MS Gothic", sans-serif;
 		padding: 0;
@@ -25,17 +25,19 @@ body{
 		outline: 0;
 		color: black;
 		user-select: none;
-		
 	}
 	@media screen and (max-width: 767px) {
     *{
-			font-size: 9pt;
+			font-size: 8pt;
+			letter-spacing: -0.5px;
 		}
 	}
 }
 body{
 	background: white;
 	.container{
+		width: 100%;
+		height: 100%;
 		display: flex;
 		flex-direction: column;
 		.container-header{
@@ -47,6 +49,8 @@ body{
 			}
 		}
 		#grid{
+			flex: 1 1 auto;
+			height: 0;
 			display: grid;
 			grid-template: 50px / 80px;
 			grid-auto-rows: 1fr;
@@ -71,9 +75,10 @@ body{
 				justify-content: center;
 				align-items: center;
 			}
-			.event{
+			.event, .dir{
 				padding: 0 8px;
-				> div{
+				place-items: center;
+				> div, > a{
 					border-width: 1px;
 					border-radius: 3px;
 					display: flex;
@@ -81,15 +86,93 @@ body{
 					align-items: center;
 					text-align: center;
 					text-shadow: 1px 1px white;
-					overflow: hidden;
 					white-space: pre;
 					line-height: 17px;
+					text-decoration: none;
+					> div{
+						display: flex;
+						width: fit-content;
+						place-items: center;
+					}
 				}
+			}
+			.dir{
+				opacity: 0.4;
+				&:hover{
+					opacity: 1;
+				}
+			}
+			.event:hover{
+				filter: brightness(90%);
 			}
 		}
 		@media screen and (max-width: 767px) {
 			#grid{
-				grid-template: 30px / 30px;
+				grid-template: 30px / 25px;
+			}
+		}
+	}
+	#popupOverlay{
+		width: 100%;
+		height: 100%;
+		background: #000A;
+		position: fixed;
+		top: 0;
+		left: 0;
+		padding: 16px;
+		z-index: 100;
+		&.hide{
+			display: none;
+		}
+		#popup{
+			width: 100%;
+			height: 100%;
+			background: white;
+			border-width: 1px;
+			border-radius: 8px;
+			position: relative;
+			display: grid;
+			gap: 8px;
+			padding: 16px;
+			grid-template-columns:  auto 1fr;
+			grid-template-rows:  40px repeat(5, auto) 1fr;
+			.popup-header{
+				font-size: 18pt;
+				text-align: center;
+				grid-column-end: span 2;
+			}
+			.caption{
+				text-align: right;
+				border-right-width: 2px;
+				padding-right: 8px;
+			}
+			#popupTime > *{
+				width: fit-content;
+				height: 100%;
+				display: inline-block;
+			}
+			#popupDescription{
+				white-space: pre-wrap;
+			}
+			.map{
+				grid-column-end: span 2;
+			}
+		}
+		.button-close{
+			width: 48px;
+			height: 48px;
+			top: 40px;
+			right: 40px;
+			border-width: 1px;
+			border-radius: 3px;
+			background: aliceblue;
+			position: absolute;
+			font-size: 32pt;
+			font-weight: bold;
+			line-height: 46px;
+			text-align: center;
+			&:hover{
+				background: azure;
 			}
 		}
 	}
@@ -106,6 +189,30 @@ body{
 		</select>
 	</div>
 	<div id="grid"></div>
+	<div
+		id="popupOverlay" class="hide">
+		<div id="popup">
+			<div class="popup-header">詳細情報</div>
+			<div class="caption">タイトル</div>
+			<div id="popupTitle"></div>
+			<div class="caption">時刻</div>
+			<div id="popupTime"></div>
+			<div class="caption">メンバー</div>
+			<div id="popupMembers"></div>
+			<div class="caption">説明</div>
+			<div id="popupDescription"></div>
+			<div class="caption">場所</div>
+			<div id="popupAddress"></div>
+			<iframe
+				id="popupMap"
+				class="map"
+			></iframe>
+		</div>
+		<div
+			class="button-close"
+			onclick="popupOverlay.classList.add('hide')"
+		>✕</div>
+	</div>
 </div>
 <script>
 const members = ['岡村', '村松', '大橋', '斉藤', '木地'];
@@ -119,25 +226,122 @@ const addElement = (tag, parent, cls) => {
 
 const events = {
 	'1月18日（土）': [
-		{ s: '07:00', e: '08:00', t: '朝飯：老酒舗', m: ['村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
-		{ s: '08:00', e: '10:00', t: '秋葉原観光', m: ['村松', '大橋', '斉藤', '木地'], c: 'lightcyan', x: { padding: '0 75% 0 25%' } },
-		{ s: '08:30', e: '11:00', t: '映画ガンダム', m: ['斉藤', '木地'], c: 'lavender', z: 2 },
-		{ s: '10:00', e: '12:00', t: '浅草観光', m: ['村松', '大橋'], c: 'aliceblue' },
-		{ s: '11:00', e: '12:30', t: '昼飯', m: ['斉藤', '木地'], c: 'lavender' },
-		{ s: '12:30', e: '13:30', t: 'ゴミうんち展／企画展「卵・玉子・たまご」', m: ['村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
-		{ s: '14:30', e: '16:00', t: 'ゆるキャン△展／きぐリン', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'seashell' },
-		{ s: '16:50', e: '18:10', t: 'もちづきさん\nコラボカフェ', m: ['村松'], c: 'honeydew', z: 2 },
-		{ s: '17:00', e: '18:00', t: '晩飯：フレスカ', m: ['岡村', '大橋', '斉藤', '木地'], c: 'seashell', x: { padding: '0 40% 0 60%' } },
-		{ s: '18:10', e: '21:00', t: '酒盛り：木花之醸造所／不純喫茶ドープ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'seashell' },
+		{
+			t: '朝飯：老酒舗', a: '老酒舗',
+			s: '07:00', e: '08:00',
+			m: ['村松', '大橋', '斉藤', '木地'],
+			c: 'lightcyan',
+		},
+		{
+			t: '秋葉原観光', a: '秋葉原駅',
+			s: '08:00', e: '10:00',
+			m: ['村松', '大橋', '斉藤', '木地'],
+			c: 'lightcyan',
+			p: { left: 1, right: 3 },
+		},
+		{
+			t: '映画ガンダム', a: 'グランドシネマサンシャイン池袋',
+			s: '08:30', e: '11:00',
+			m: ['斉藤', '木地'], z: 2,
+			c: 'lavender',
+		},
+		{
+			t: '浅草観光', a: '浅草寺',
+			s: '10:00', e: '12:00',
+			m: ['村松', '大橋'],
+			c: 'aliceblue',
+		},
+		{
+			t: '卵・玉子・たまご／国立新美術館', a: '国立新美術館',
+			s: '12:30', e: '13:30',
+			d: '東京ミッドタウンのとらやで企画展「卵・玉子・たまご」\n国立新美術館でカフェ',
+			m: ['村松', '大橋', '斉藤', '木地'],
+			c: 'lightcyan'
+		},
+		{
+			t: 'ゆるキャン△展／きぐリン', a: '東京工芸大学 杉並アニメーションミュージアム',
+			s: '14:30', e: '16:00',
+			m: ['岡村', '村松', '大橋', '斉藤', '木地'],
+			c: 'seashell',
+		},
+		{
+			t: 'もちづきさん\nコラボカフェ', a: '白泉社カフェ',
+			s: '16:50', e: '18:10',
+			m: ['村松'], z: 2,
+			c: 'honeydew',
+		},
+		{
+			t: '晩飯：フレスカ', a: '東京カフェレストラン フレスカ',
+			s: '17:00', e: '18:00',
+			m: ['岡村', '大橋', '斉藤', '木地'],
+			c: 'seashell',
+			p: { left: 3, right: 1 },
+		},
+		{
+			t: '晩酌：木花之醸造所', a: '木花之醸造所',
+			s: '18:30', e: '20:30',
+			m: ['岡村', '村松', '大橋', '斉藤', '木地'],
+			c: 'seashell',
+		},
+		{
+			t: '夜食：名代 富士そば', a: '名代富士そば 浅草店',
+			s: '21:00', e: '21:30',
+			m: ['村松', '大橋'],
+			c: 'lightcyan',
+			p: { left: 1, right: 3 },
+		},
 	],
 	'1月19日（日）': [
-		{ s: '09:30', e: '10:30', t: 'ポケモン×工芸展', m: ['岡村', '村松', '大橋', '斉藤'], c: 'aliceblue' },
-		{ s: '12:00', e: '13:00', t: '昼飯：ハングリータイガー', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
-		{ s: '13:30', e: '14:30', t: 'スヌーピーミュージアム', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
-		{ s: '14:30', e: '15:30', t: 'ピーナッツカフェ', m: ['岡村', '村松', '大橋', '斉藤', '木地'], c: 'lightcyan' },
-		{ s: '17:00', e: '19:00', t: '帰りの新幹線', m: ['斉藤'], c: 'seashell', z: 2 },
-		{ s: '17:00', e: '18:00', t: '奥野ビル', m: ['岡村', '村松', '大橋', '木地'], c: 'lightcyan', x: { padding: '0 60% 0 40%' } },
-		{ s: '18:00', e: '19:00', t: '晩飯：名代 富士そば', m: ['岡村', '村松', '大橋', '木地'], c: 'lightcyan', x: { padding: '0 60% 0 40%' } },
+	{
+			s: '09:30', e: '10:30',
+			t: 'ポケモン×工芸展', a: '麻布台ヒルズ ガーデンプラザA',
+			m: ['岡村', '村松', '大橋', '斉藤'],
+			c: 'aliceblue',
+		},
+		{
+			s: '12:00', e: '13:00',
+			t: '昼飯：ハングリータイガー', a: 'ハングリータイガー 若葉台店',
+			m: ['岡村', '村松', '大橋', '斉藤'],
+			c: 'lightcyan',
+		},
+		{
+			s: '14:00', e: '16:00',
+			t: 'スヌーピーミュージアム\n南町田グランベリーバーク', a: 'スヌーピーミュージアム',
+			m: ['岡村', '村松', '大橋', '斉藤', '木地'],
+			c: 'lightcyan',
+		},
+		{
+			s: '17:00', e: '24:00',
+			t: '新幹線\n帰宅', a: '東京駅',
+			m: ['斉藤'], z: 2,
+			c: 'seashell',
+		},
+		{
+			s: '17:00', e: '19:30',
+			t: '月島もんじゃ もへじ', a: '月島もんじゃ もへじ はなれ',
+			m: ['岡村', '村松', '大橋', '木地'],
+			c: 'lightcyan',
+			p: { left: 1, right: 3 },
+		},
+		{
+			s: '18:30', e: '24:00',
+			t: '新幹線\n帰宅', a: '東京駅',
+			m: ['岡村'], z: 2,
+			c: 'seashell',
+		},
+		{
+			s: '19:50', e: '20:30',
+			t: 'らぁ麺 吉井', a: 'らぁ麺 吉井',
+			m: ['村松', '大橋', '木地'],
+			c: 'lightcyan',
+			p: { left: 1, right: 3 },
+		},
+		{
+			s: '20:30', e: '24:00',
+			t: '新幹線\n帰宅', a: '東京駅',
+			m: ['村松'],
+			c: 'seashell',
+		},
 	],
 };
 
@@ -146,7 +350,6 @@ window.onload = () => {
 		const el = addElement('option', date);
 		el.textContent = el.value = e;
 	});
-
 	showSchedule();
 }
 
@@ -161,6 +364,7 @@ function showSchedule(){
 		return 12 * (Number(ary[0]) - 6) + Number(ary[1]) / 5 + 2;
 	}
 
+	// グリッドの作成
 	while(grid.firstChild) grid.firstChild.remove();
 	let el = addElement('div', grid, ['grid-line', 'center-middle', 'member']);
 	el.textContent = '名前';
@@ -171,6 +375,7 @@ function showSchedule(){
 		el.style.gridArea = `${i * 12 + 2} / 1 / span 12 / span 1`;
 		el.style.backgroundColor = getColorByHour(i + 6);
 	});
+	// イベントをメンバー毎に集約
 	members.forEach((member, c) => {
 		el = addElement('div', grid, ['grid-line', 'center-middle', 'member']);
 		el.textContent = member;
@@ -178,9 +383,10 @@ function showSchedule(){
 		[...Array(18)].forEach((_, i) => {
 			el = addElement('div', grid, ['grid-line']);
 			el.style.gridArea = `${i * 12 + 2} / ${c + 2} / span 12 / span 1`;
-		el.style.backgroundColor = getColorByHour(i + 6);
+			el.style.backgroundColor = getColorByHour(i + 6);
 		});
 	});
+	// イベントの描写
 	events[date.value].forEach(e => {
 		el = addElement('div', grid, ['event']);
 		const sRow = timeToNumber(e.s);
@@ -189,13 +395,62 @@ function showSchedule(){
 		const sCol = Math.min(...cols);
 		const eCol = Math.max(...cols) + 1;
 		el.style.gridArea = `${sRow} / ${sCol} / ${eRow} / ${eCol}`;
-		if(e.z) el.style.zIndex = e.z;
+		el.style.zIndex = (e.z ?? 0) + 20;
 		el = addElement('div', el);
-		el.textContent = `${e.s}-${e.e}\n${e.t}`;
 		el.style.backgroundColor = e.c;
-		if(e.x) Object.entries(e.x).forEach(([k, v]) => el.style[k] = v);
+		if(e.p){
+			addElement('div', el).style.flexGrow = e.p.left;
+			addElement('div', el).textContent = `${e.s}-${e.e}\n${e.t}`;
+			addElement('div', el).style.flexGrow = e.p.right;
+		} else {
+			el.textContent = `${e.s}-${e.e}\n${e.t}`;
+		}
+		el.onclick = () => {
+			popupOverlay.classList.remove('hide');
+			popupTitle.textContent = e.t;
+			popupTime.textContent = `${e.s} - ${e.e}`;
+			popupMembers.textContent = e.m.join('、');
+			popupDescription.textContent = e.d ?? '';
+			popupAddress.textContent = e.a;
+			popupMap.src = `https://www.google.com/maps?output=embed&saddr=${e.a}&daddr=${e.a}&hl=ja`;
+		}
+	});
+	// 移動をメンバー毎に集約
+	const dirs = [];
+	members.forEach((member, index) => {
+		events[date.value]
+			.filter(event => event.m.includes(member))
+			.sort((a, b) => a.s == b.s ? 0 : a.s < b.s ? -1 : 1)
+			.reduce((p, c) => {
+				if(p.e < c.s) {
+					const filteredDir = dirs.filter(dir => dir.from == p && dir.to == c);
+					if(filteredDir.length){
+						filteredDir.forEach(dir => dir.members.push(member));
+					} else {
+						dirs.push({ from: p, to: c, members: [member] });
+					}
+				}
+				return p.e > c.e ? p : c;
+			});
+	});
+	// 移動の描写
+	dirs.forEach(dir => {
+		el = addElement('div', grid, ['dir']);
+		const sRow = timeToNumber(dir.from.e);
+		const eRow = timeToNumber(dir.to.s);
+		const cols = dir.members.map(m => members.indexOf(m) + 2);
+		const sCol = Math.min(...cols);
+		const eCol = Math.max(...cols) + 1;
+		el.style.gridArea = `${sRow} / ${sCol} / ${eRow} / ${eCol}`;
+		el.style.zIndex = `${dir.from.z ?? 0 + dir.to.z ?? 0}`;
+		el = addElement('a', el);
+		el.style.backgroundColor = 'whitesmoke';
+		el.textContent = `移動`;
+		el.href = `https://www.google.com/maps?saddr=${dir.from.a}&daddr=${dir.to.a}&dirflg=${dir.from.f ?? 'r'}&hl=ja`;
+		el.rel = 'noopener noreferrer';
+		el.target = '_blank';
 	});
 }
 </script>
 </body>
-</html>　
+</html>
