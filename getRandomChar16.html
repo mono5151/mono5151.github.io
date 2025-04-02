@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
-	<title>色あて</title>
+	<title>文字列ランダム生成</title>
 <style>
 html, body{
 	width: 100%;
@@ -20,7 +20,7 @@ body{
 		padding: 0;
 		border: 0 #333 solid;
 		outline: 0;
-		font: 12pt/30px 'Yu Gothic';
+		font: 12pt/30px 'MS Gothic';
 		color: #222;
 		box-sizing: border-box;
 	}
@@ -48,11 +48,12 @@ const addElement = (tag, parent, text) => {
 	return el;
 }
 
+const getRandomChar = () => String.fromCharCode(97 + Math.floor(Math.random() * 26));
+
 window.onload = () => {
-	const l = ['Roboto', 'Noto Sans CJK JP', 'Droid Sans', 'モトヤフォント', 'Noto fonts', 'Droid'];
-	l.sort();
-	l.forEach(i => addElement('div', container, `${i}: 🚮\uFE0E`).style.fontFamily = i);
+	[...Array(5)].forEach(() => addElement('div', container, [...Array(16)].map(getRandomChar).join('')));
 }
+
 </script>
 </body>
 </html>
