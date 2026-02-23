@@ -92,21 +92,27 @@
     }
     #container-n5{
       flex-direction: column;
-      gap: 4px;
-      padding: 5px !important;
+      padding: 0 !important;
       opacity: 0.8;
       background-color: lavender;
+      text-align: right;
       > div{
-        text-align: right;
-        gap: 15px;
-        .ten{
-          flex: 2;
-        }
-      }
-      #container-n51{
-        justify-content: flex-end;
+        flex: 1;
         > div{
-          flex: 0;
+          padding: 2px 8px 0;
+          &:nth-child(n + 2){
+            border-left: solid 1px black;
+          }
+        }
+        &:first-child{
+          > div:nth-child(n + 2){
+            display: block;
+            text-align: center;
+          }
+        }
+        &:nth-child(-n + 4) > div{
+          padding-bottom: 3px;
+          border-bottom: solid 1px black;
         }
       }
     }
@@ -188,32 +194,35 @@
           </select>
           <div>符</div>
         </div>
-        <div>
-          <select id="ddlHan">
-            <option value=1>1</option>
-            <option value=2>2</option>
-            <option value=3 selected>3</option>
-            <option value=4>4</option>
-          </select>
-          <div>飜</div>
-        </div>
+        <div>子</div>
+        <div>親</div>
       </div>
       <div>
-        <div class="ten">
-          <div>子</div>
-          <div><p id="lblKo">1,000</p>点</div>
-        </div>
-        <div class="ten">
-          <div>親</div>
-          <div><p id="lblOya">2,000</p>点</div>
-        </div>
+        <div><p>1</p>飜</div>
+        <div><p id="lblKo1">300</p>点</div>
+        <div><p id="lblOya1">500</p>点</div>
+      </div>
+      <div>
+        <div><p>2</p>飜</div>
+        <div><p id="lblKo2">500</p>点</div>
+        <div><p id="lblOya2">1,000</p>点</div>
+      </div>
+      <div>
+        <div><p>3</p>飜</div>
+        <div><p id="lblKo3">1,000</p>点</div>
+        <div><p id="lblOya3">2,000</p>点</div>
+      </div>
+      <div>
+        <div><p>4</p>飜</div>
+        <div><p id="lblKo4">2,000</p>点</div>
+        <div><p id="lblOya4">3,900</p>点</div>
       </div>
     </div>
   </div>
 
   <script>
     const $ = e => Number(document.querySelector(`input[name="${e}"]:checked`).value);
-    const ceil100 = e => (Math.ceil(e / 100) * 100).toLocaleString();
+    const formatCeiledValueWithMax = (val, mx) => Math.min(Math.ceil(val / 100) * 100, mx).toLocaleString();
 
     function calcFu(){
       const agari = $('agari');
@@ -239,24 +248,27 @@
       calcTen(fu);
     }
 
-    function calcTen(fu = Number(ddlFu.value), han = Number(ddlHan.value)){
-      let ten = fu * Math.pow(2, 2 + han);
-      if(ten > 2000) ten = 2000;
+    function calcTen(fu = Number(ddlFu.value)){
+      const tsumo = [1, 2].includes($('agari'));
 
-      const agari = $('agari');
-      if(agari == 2 || agari == 1){
-        lblOya.textContent = ceil100(ten * 2);
-        lblKo.textContent = ceil100(ten);
-      } else {
-        lblOya.textContent = ceil100(ten * 6);
-        lblKo.textContent = ceil100(ten * 4);
-      }
+      const ten = fu * (tsumo ? 8 : 32);
+      const maxOya = tsumo ? 4000 : 12000;
+      const maxKo = tsumo ? 2000 : 8000;
+      const late = tsumo ? 2 : 1.5;
+
+      lblOya4.textContent = formatCeiledValueWithMax(ten * late * 8, maxOya);
+      lblOya3.textContent = formatCeiledValueWithMax(ten * late * 4, maxOya);
+      lblOya2.textContent = formatCeiledValueWithMax(ten * late * 2, maxOya);
+      lblOya1.textContent = formatCeiledValueWithMax(ten * late, maxOya);
+      lblKo4.textContent = formatCeiledValueWithMax(ten * 8, maxKo);
+      lblKo3.textContent = formatCeiledValueWithMax(ten * 4, maxKo);
+      lblKo2.textContent = formatCeiledValueWithMax(ten * 2, maxKo);
+      lblKo1.textContent = formatCeiledValueWithMax(ten, maxKo);
     }
 
     window.onload = e => {
       document.querySelectorAll("input").forEach(e => e.onchange = calcFu);
       ddlFu.onchange = e => calcTen();
-      ddlHan.onchange = e => calcTen();
       calcTen();
     }
   </script>
